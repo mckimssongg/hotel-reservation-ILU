@@ -1,3 +1,8 @@
 from django.contrib import admin
+from api.models import EntradaListaEspera, Habitacion, PrecioNocheReserva, Reserva, TipoHabitacion
 
-# Register your models here.
+admin.site.register(TipoHabitacion)
+admin.site.register(Habitacion)
+admin.site.register(Reserva)
+admin.site.register(PrecioNocheReserva)
+admin.site.register(EntradaListaEspera)
