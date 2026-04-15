@@ -1,4 +1,5 @@
 import logging
+from zoneinfo import ZoneInfoNotFoundError
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -41,6 +42,14 @@ def manejador_excepcion_personalizado(exc, contexto):
 
     if isinstance(exc, ErrorValidacionHotel):
         return construir_error('ERROR_VALIDACION', exc.mensaje, exc.detalle, status.HTTP_400_BAD_REQUEST)
+
+    if isinstance(exc, ZoneInfoNotFoundError):
+        return construir_error(
+            'CONFIGURACION_ZONA_HORARIA',
+            'Falta la base de zonas horarias en el entorno. Instala o actualiza tzdata y reinicia el servidor.',
+            {'time_zone': 'UTC'},
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
     if respuesta is None:
         logger.exception('error no controlado', exc_info=exc)
