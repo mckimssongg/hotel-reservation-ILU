@@ -66,3 +66,24 @@ class SerializadorCrearReserva(serializers.Serializer):
             )
 
         return attrs
+
+
+class SerializadorCotizarModificacionReserva(serializers.Serializer):
+    fecha_entrada = serializers.DateField(required=True)
+    fecha_salida = serializers.DateField(required=True)
+    cantidad_huespedes = serializers.IntegerField(required=False, min_value=1)
+
+    def validate(self, attrs):
+        fecha_entrada = attrs.get('fecha_entrada')
+        fecha_salida = attrs.get('fecha_salida')
+
+        if fecha_entrada and fecha_salida and fecha_salida <= fecha_entrada:
+            raise serializers.ValidationError(
+                {'fecha_salida': 'La fecha de salida debe ser mayor a la fecha de entrada.'}
+            )
+
+        return attrs
+
+
+class SerializadorConfirmarModificacionReserva(SerializadorCotizarModificacionReserva):
+    confirmar = serializers.BooleanField(required=False, default=False)

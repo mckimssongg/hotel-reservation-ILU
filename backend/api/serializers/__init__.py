@@ -6,6 +6,8 @@ from api.serializers.habitacion import (
 	SerializadorTipoHabitacion,
 )
 from api.serializers.reserva import (
+	SerializadorConfirmarModificacionReserva,
+	SerializadorCotizarModificacionReserva,
 	SerializadorCrearReserva,
 	SerializadorPrecioNocheReserva,
 	SerializadorReserva,
@@ -28,4 +30,6 @@ __all__ = [
 	'SerializadorPrecioNocheReserva',
 	'SerializadorReserva',
 	'SerializadorCrearReserva',
+	'SerializadorCotizarModificacionReserva',
+	'SerializadorConfirmarModificacionReserva',
 ]

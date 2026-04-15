@@ -5,7 +5,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from api.models import Reserva
-from api.serializers import SerializadorCrearReserva, SerializadorReserva
+from api.serializers import (
+    SerializadorConfirmarModificacionReserva,
+    SerializadorCotizarModificacionReserva,
+    SerializadorCrearReserva,
+    SerializadorReserva,
+)
 from api.services import ServicioReserva
 
 
@@ -28,6 +33,10 @@ class ReservaViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'create':
             return SerializadorCrearReserva
+        if self.action == 'cotizar_modificacion':
+            return SerializadorCotizarModificacionReserva
+        if self.action == 'confirmar_modificacion':
+            return SerializadorConfirmarModificacionReserva
         return SerializadorReserva
 
     def get_permissions(self):
@@ -77,6 +86,31 @@ class ReservaViewSet(viewsets.ModelViewSet):
         reserva.estado = Reserva.REGISTRADA_ENTRADA
         reserva.save(update_fields=['estado'])
         return Response({'mensaje': 'Entrada registrada.'}, status=status.HTTP_200_OK)
+
+    @action(methods=['post'], detail=True, url_path='cotizar-modificacion')
+    def cotizar_modificacion(self, request, *args, **kwargs):
+        reserva = self.get_object()
+        serializador = self.get_serializer(data=request.data)
+        serializador.is_valid(raise_exception=True)
+
+        respuesta = self.servicio_reserva.cotizar_modificacion(
+            reserva_id=reserva.id,
+            datos=serializador.validated_data,
+        )
+        return Response(respuesta, status=status.HTTP_200_OK)
+
+    @action(methods=['post'], detail=True, url_path='confirmar-modificacion')
+    def confirmar_modificacion(self, request, *args, **kwargs):
+        reserva = self.get_object()
+        serializador = self.get_serializer(data=request.data)
+        serializador.is_valid(raise_exception=True)
+
+        reserva_actualizada = self.servicio_reserva.confirmar_modificacion(
+            reserva_id=reserva.id,
+            datos=serializador.validated_data,
+        )
+        serializador_respuesta = SerializadorReserva(reserva_actualizada)
+        return Response(serializador_respuesta.data, status=status.HTTP_200_OK)
 
     @action(methods=['post'], detail=True, url_path='registrar-salida')
     def registrar_salida(self, request, *args, **kwargs):

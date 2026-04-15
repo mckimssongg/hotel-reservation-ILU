@@ -6,8 +6,10 @@ from rest_framework.views import exception_handler
 
 from api.exceptions.base import ErrorValidacionHotel
 from api.exceptions.reserva import (
+    ErrorConfirmacionModificacionRequerida,
     ErrorConcurrenciaReserva,
     ErrorConflictoReserva,
+    ErrorModificacionReservaNoPermitida,
     HabitacionNoDisponibleError,
 )
 
@@ -22,6 +24,17 @@ def manejador_excepcion_personalizado(exc, contexto):
 
     if isinstance(exc, ErrorConflictoReserva):
         return construir_error('CONFLICTO_RESERVA', exc.mensaje, {}, status.HTTP_409_CONFLICT)
+
+    if isinstance(exc, ErrorModificacionReservaNoPermitida):
+        return construir_error('MODIFICACION_NO_PERMITIDA', exc.mensaje, exc.detalle, status.HTTP_409_CONFLICT)
+
+    if isinstance(exc, ErrorConfirmacionModificacionRequerida):
+        return construir_error(
+            'CONFIRMACION_MODIFICACION_REQUERIDA',
+            exc.mensaje,
+            exc.detalle,
+            status.HTTP_400_BAD_REQUEST,
+        )
 
     if isinstance(exc, HabitacionNoDisponibleError):
         return construir_error('HABITACION_NO_DISPONIBLE', exc.mensaje, {}, status.HTTP_400_BAD_REQUEST)

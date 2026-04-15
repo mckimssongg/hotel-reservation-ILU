@@ -6,9 +6,11 @@ from api.exceptions.handler import (
     sacar_mensaje,
 )
 from api.exceptions.reserva import (
+    ErrorConfirmacionModificacionRequerida,
     ErrorConcurrenciaReserva,
     ErrorConflictoReserva,
     ErrorHabitacionNoDisponible,
+    ErrorModificacionReservaNoPermitida,
     HabitacionNoDisponibleError,
 )
 
@@ -17,6 +19,8 @@ __all__ = [
     'ErrorConcurrenciaReserva',
     'ErrorConflictoReserva',
     'ErrorHabitacionNoDisponible',
+    'ErrorModificacionReservaNoPermitida',
+    'ErrorConfirmacionModificacionRequerida',
     'HabitacionNoDisponibleError',
     'manejador_excepcion_personalizado',
     'construir_error',
