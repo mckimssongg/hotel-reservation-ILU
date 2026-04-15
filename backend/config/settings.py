@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
     'api',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
@@ -88,7 +89,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
-    'EXCEPTION_HANDLER': 'api.utils.exceptions.manejador_excepcion_personalizado',
+    'EXCEPTION_HANDLER': 'api.exceptions.handler.manejador_excepcion_personalizado',
 }
 
 SIMPLE_JWT = {

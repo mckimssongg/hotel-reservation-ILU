@@ -10,6 +10,8 @@ from api.services import ServicioReserva
 
 
 class ReservaViewSet(viewsets.ModelViewSet):
+    servicio_reserva = ServicioReserva()
+
     queryset = (
         Reserva.objects
         .filter(activo=True)
@@ -52,8 +54,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
         serializador = self.get_serializer(data=request.data)
         serializador.is_valid(raise_exception=True)
 
-        servicio_reserva = ServicioReserva()
-        reserva = servicio_reserva.crear_reserva(serializador.validated_data)
+        reserva = self.servicio_reserva.crear_reserva(serializador.validated_data)
 
         serializador_respuesta = SerializadorReserva(reserva)
         return Response(serializador_respuesta.data, status=status.HTTP_201_CREATED)

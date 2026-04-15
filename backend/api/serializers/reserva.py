@@ -55,3 +55,14 @@ class SerializadorCrearReserva(serializers.Serializer):
     canal_reserva = serializers.CharField(required=False, max_length=20, default='web')
     pagada = serializers.BooleanField(required=False, default=False)
     notas = serializers.CharField(required=False, allow_blank=True, default='')
+
+    def validate(self, attrs):
+        fecha_entrada = attrs.get('fecha_entrada')
+        fecha_salida = attrs.get('fecha_salida')
+
+        if fecha_entrada and fecha_salida and fecha_salida <= fecha_entrada:
+            raise serializers.ValidationError(
+                {'fecha_salida': 'La fecha de salida debe ser mayor a la fecha de entrada.'}
+            )
+
+        return attrs

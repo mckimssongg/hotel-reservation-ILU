@@ -1,5 +1,8 @@
 from django.core.validators import MinValueValidator
+from django.contrib.postgres.constraints import ExclusionConstraint
+from django.contrib.postgres.fields import RangeOperators
 from django.db import models
+from django.db.models import F, Func
 
 from api.models.habitacion import Habitacion
 from api.models.base import ModeloBase
@@ -47,6 +50,22 @@ class Reserva(ModeloBase):
                 fields=['habitacion', 'fecha_entrada', 'fecha_salida'],
                 name='reserva_unica_habitacion_fechas',
                 condition=~models.Q(estado='CANCELADA'),
+            ),
+            ExclusionConstraint(
+                name='reserva_no_traslape_habitacion',
+                expressions=[
+                    (
+                        Func(
+                            F('fecha_entrada'),
+                            F('fecha_salida'),
+                            function='DATERANGE',
+                            template="%(function)s(%(expressions)s, '[)')",
+                        ),
+                        RangeOperators.OVERLAPS,
+                    ),
+                    ('habitacion', RangeOperators.EQUAL),
+                ],
+                condition=models.Q(activo=True) & ~models.Q(estado='CANCELADA'),
             ),
         ]
 

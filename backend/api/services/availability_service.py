@@ -1,7 +1,7 @@
 from datetime import date
 
+from api.exceptions import ErrorValidacionHotel
 from api.models import Habitacion, Reserva, TipoHabitacion
-from api.utils.exceptions import ErrorValidacionHotel
 
 
 class ServicioDisponibilidad:

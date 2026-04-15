@@ -1,8 +1,8 @@
 from datetime import timedelta
 from decimal import Decimal, ROUND_HALF_UP
 
+from api.exceptions import ErrorValidacionHotel
 from api.models import Habitacion, Reserva
-from api.utils.exceptions import ErrorValidacionHotel
 
 
 class ServicioPrecios:
