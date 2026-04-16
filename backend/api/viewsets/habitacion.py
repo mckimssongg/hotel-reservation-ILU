@@ -6,6 +6,7 @@ from rest_framework.response import Response
 
 from api.models import Habitacion, TipoHabitacion
 from api.serializers import (
+    SerializadorConsultaCalendarioMensual,
     SerializadorConsultaDisponibilidad,
     SerializadorConsultaPrecio,
     SerializadorHabitacion,
@@ -68,6 +69,22 @@ class HabitacionViewSet(viewsets.ReadOnlyModelViewSet):
             return self.get_paginated_response(pagina)
 
         return Response(respuesta, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=False, url_path='calendario-mensual')
+    def calendario_mensual(self, request, *args, **kwargs):
+        serializador_consulta = SerializadorConsultaCalendarioMensual(data=request.query_params)
+        serializador_consulta.is_valid(raise_exception=True)
+        datos = serializador_consulta.validated_data
+
+        servicio_disponibilidad = ServicioDisponibilidad()
+        matriz = servicio_disponibilidad.obtener_matriz_calendario(
+            mes=datos['mes'],
+            anio=datos['anio'],
+            tipo_habitacion_id=datos.get('tipo_habitacion'),
+            piso=datos.get('piso'),
+        )
+
+        return Response(matriz, status=status.HTTP_200_OK)
 
     @action(methods=['get'], detail=True, url_path='precio')
     def precio(self, request, *args, **kwargs):

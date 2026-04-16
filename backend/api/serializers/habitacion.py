@@ -59,3 +59,10 @@ class SerializadorConsultaDisponibilidad(serializers.Serializer):
 class SerializadorConsultaPrecio(serializers.Serializer):
     fecha_entrada = serializers.DateField(required=True)
     fecha_salida = serializers.DateField(required=True)
+
+
+class SerializadorConsultaCalendarioMensual(serializers.Serializer):
+    mes = serializers.IntegerField(required=True, min_value=1, max_value=12)
+    anio = serializers.IntegerField(required=True, min_value=1900, max_value=2200)
+    tipo_habitacion = serializers.IntegerField(required=False, min_value=1)
+    piso = serializers.IntegerField(required=False, min_value=1)
