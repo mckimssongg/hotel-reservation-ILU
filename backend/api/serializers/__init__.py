@@ -1,4 +1,5 @@
 from api.serializers.habitacion import (
+	SerializadorConsultaCalendarioMensual,
 	SerializadorConsultaDisponibilidad,
 	SerializadorConsultaPrecio,
 	SerializadorHabitacion,
@@ -25,6 +26,7 @@ __all__ = [
 	'SerializadorTipoHabitacion',
 	'SerializadorHabitacion',
 	'SerializadorHabitacionDisponible',
+	'SerializadorConsultaCalendarioMensual',
 	'SerializadorConsultaDisponibilidad',
 	'SerializadorConsultaPrecio',
 	'SerializadorPrecioNocheReserva',
