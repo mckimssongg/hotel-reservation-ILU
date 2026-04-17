@@ -41,9 +41,12 @@ frontend/build/
 
 # entorno
 .env
+.env.production
 .env.local
 .env.*.local
 !.env.example
+backend/.env.production
+*.pem
 
 # editor
 .vscode/
