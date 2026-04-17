@@ -7,7 +7,7 @@ export default function RoomGrid({ habitaciones, resumen, busquedaRealizada, car
     <section>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2 className="h4 mb-0">{busquedaRealizada ? `${totalHabitaciones} habitaciones disponibles` : 'Habitaciones destacadas'}</h2>
-        {busquedaRealizada ? <span className="badge rounded-pill text-bg-light border">Resultados en vivo</span> : null}
+        {/* {busquedaRealizada ? <span className="badge rounded-pill text-bg-light border">Resultados en vivo</span> : null} */}
       </div>
 
       {errorBusqueda ? <div className="alert alert-danger rounded-4 shadow-sm">{errorBusqueda}</div> : null}

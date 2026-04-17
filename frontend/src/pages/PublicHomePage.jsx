@@ -150,7 +150,8 @@ export default function PublicHomePage() {
       return
     }
 
-    setMensajeAccion('La funcionalidad de lista de espera estara disponible en una siguiente fase.')
+    // setMensajeAccion('La funcionalidad de lista de espera estara disponible en una siguiente fase.')
+    setMensajeAccion('Al rato sale mi estimado.')
   }
 
   function cerrarModalReserva() {
