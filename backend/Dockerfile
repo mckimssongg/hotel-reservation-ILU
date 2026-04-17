@@ -14,5 +14,8 @@ RUN pip install --no-cache-dir -r requirements.txt gunicorn
 
 COPY . .
 
-# Comando para ejecutar Gunicorn (apuntando a tu carpeta config)
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--max-requests", "1000", "--timeout", "60", "config.wsgi:application"]
+RUN mkdir -p /app/staticfiles
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
+
+# CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--max-requests", "1000", "--timeout", "60", "config.wsgi:application"]
