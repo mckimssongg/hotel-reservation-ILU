@@ -63,7 +63,7 @@ export default function AuthModal() {
   }
 
   return (
-    <div className="auth-modal-backdrop position-fixed top-0 start-0 w-100 h-100 d-flex align-items-end align-items-md-center justify-content-center p-3" onClick={cerrarModalAuth}>
+    <div className="auth-modal-backdrop position-fixed top-0 start-0 w-100 h-100 d-flex align-items-end align-items-md-center justify-content-center p-3">
       <div className="auth-modal-sheet card border-0 rounded-4 shadow-sm w-100" onClick={(event) => event.stopPropagation()}>
         <div className="card-body p-4 p-md-4">
           <div className="d-flex justify-content-between align-items-center mb-3">

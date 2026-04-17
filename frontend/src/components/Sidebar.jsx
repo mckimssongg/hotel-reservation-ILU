@@ -1,12 +1,24 @@
 import { NavLink } from 'react-router-dom'
 
-const opcionesSidebar = [
-  { path: '/dashboard/mis-reservaciones', label: 'Mis Reservaciones', icono: 'bi-journal-check' },
-  { path: '/dashboard/calendario', label: 'Calendario', icono: 'bi-calendar3' },
-  { path: '/dashboard/lista-espera', label: 'Lista de Espera', icono: 'bi-clock-history' },
-]
+import { useAuth } from '../hooks/useAuth'
 
 export default function Sidebar({ visibleMovil, onCerrarMovil, onCerrarSesion }) {
+  const { usuario } = useAuth()
+  const esStaff = usuario?.es_staff === true
+
+  const opcionesHuesped = [
+    { path: '/dashboard/mis-reservaciones', label: 'Mis Reservaciones', icono: 'bi-journal-check' },
+    { path: '/dashboard/lista-espera', label: 'Lista de Espera', icono: 'bi-clock-history' },
+  ]
+
+  const opcionesStaff = [
+    { path: '/dashboard/reservaciones', label: 'Todas las Reservas', icono: 'bi-inboxes' },
+    { path: '/dashboard/calendario', label: 'Calendario', icono: 'bi-calendar3' },
+    { path: '/dashboard/lista-espera', label: 'Lista de Espera', icono: 'bi-clock-history' },
+  ]
+
+  const opcionesSidebar = esStaff ? opcionesStaff : opcionesHuesped
+
   return (
     <aside className={`dashboard-sidebar card border-0 shadow-sm rounded-4 ${visibleMovil ? 'd-block' : 'd-none'} d-md-block`}>
       <div className="card-body p-2">
@@ -31,7 +43,7 @@ export default function Sidebar({ visibleMovil, onCerrarMovil, onCerrarSesion })
             </NavLink>
           ))}
 
-          <button type="button" className="list-group-item list-group-item-action border-0 rounded-3 mb-1" onClick={onCerrarSesion}>
+          <button type="button" className="list-group-item list-group-item-action border-0 rounded-3 mb-1 text-danger" onClick={onCerrarSesion}>
             <i className="bi bi-box-arrow-right me-2" />
             Cerrar Sesion
           </button>

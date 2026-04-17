@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import ModalCancelarReserva from '../components/ModalCancelarReserva'
 import ModalModificarReserva from '../components/ModalModificarReserva'
 import { filtrosDashboardIniciales, estadoReservaBadgeMap, estadoReservaTextoMap } from '../constants/appConstants'
 import { useAuth } from '../hooks/useAuth'
@@ -16,6 +17,9 @@ export default function MisReservasPage() {
 
   const [modalModificarAbierto, setModalModificarAbierto] = useState(false)
   const [reservaParaModificar, setReservaParaModificar] = useState(null)
+
+  const [modalCancelarAbierto, setModalCancelarAbierto] = useState(false)
+  const [reservaACancelar, setReservaACancelar] = useState(null)
 
   const correoUsuario = useMemo(() => (usuario?.correo || '').toLowerCase(), [usuario?.correo])
   const reservasFiltradas = useMemo(() => {
@@ -57,20 +61,18 @@ export default function MisReservasPage() {
     }
   }
 
-  async function cancelarReservacion(reservaId) {
-    const confirmar = window.confirm('Deseas cancelar esta reservacion?')
-    if (!confirmar) {
-      return
-    }
+  function prepararCancelarReservacion(reserva) {
+    setReservaACancelar(reserva)
+    setModalCancelarAbierto(true)
+  }
 
-    setErrorReservas('')
+  function cerrarModalCancelar() {
+    setModalCancelarAbierto(false)
+    setReservaACancelar(null)
+  }
 
-    const { response, data } = await ejecutarConAuth((access) => cancelarReservaApi(reservaId, access))
-    if (!response.ok) {
-      setErrorReservas(obtenerMensajeError(data, 'No se pudo cancelar la reservacion.'))
-      return
-    }
-
+  async function manejarCancelacionExitosa() {
+    cerrarModalCancelar()
     await cargarReservaciones()
   }
 
@@ -165,7 +167,7 @@ export default function MisReservasPage() {
                       <i className="bi bi-pencil me-1" />
                       Modificar Fechas
                     </button>
-                    <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => cancelarReservacion(reserva.id)}>
+                    <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => prepararCancelarReservacion(reserva)}>
                       Cancelar
                     </button>
                   </div>
@@ -181,6 +183,13 @@ export default function MisReservasPage() {
         reserva={reservaParaModificar}
         onCerrar={cerrarModalModificar}
         onModificacionExitosa={manejarModificacionExitosa}
+      />
+
+      <ModalCancelarReserva
+        abierto={modalCancelarAbierto}
+        reserva={reservaACancelar}
+        onCerrar={cerrarModalCancelar}
+        onCancelacionExitosa={manejarCancelacionExitosa}
       />
     </>
   )
