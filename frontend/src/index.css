@@ -1,38 +1,137 @@
 :root {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #1a1a2e;
-  background: #f5f6fa;
-}
-
-* {
-  box-sizing: border-box;
+  --hotel-color-fondo: #f9fafb;
+  --hotel-color-primario: #2c5f2d;
+  --hotel-color-secundario: #e9f5ec;
+  --hotel-color-texto: #1f2937;
+  --hotel-color-texto-secundario: #4b5563;
+  --bs-primary: #2c5f2d;
+  --bs-primary-rgb: 44, 95, 45;
 }
 
 body {
   margin: 0;
-  min-height: 100vh;
-  background: #f5f6fa;
+  background-color: var(--hotel-color-fondo);
+  color: var(--hotel-color-texto);
 }
 
-#root {
-  min-height: 100vh;
+.text-secondary {
+  color: var(--hotel-color-texto-secundario) !important;
 }
 
-.hello-page {
-  min-height: 100vh;
-  display: grid;
-  place-content: center;
-  gap: 0.75rem;
-  padding: 1.5rem;
+.auth-modal-backdrop {
+  z-index: 1090;
+  background: rgba(20, 24, 31, 0.45);
+}
+
+.auth-modal-sheet {
+  max-width: 500px;
+  view-transition-name: auth-modal-sheet;
+}
+
+.dashboard-sidebar .list-group-item.active {
+  background-color: var(--hotel-color-primario);
+  border-color: var(--hotel-color-primario);
+}
+
+::view-transition-old(auth-modal-sheet),
+::view-transition-new(auth-modal-sheet) {
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+::view-transition-old(auth-modal-sheet) {
+  animation-name: auth-modal-old;
+}
+
+::view-transition-new(auth-modal-sheet) {
+  animation-name: auth-modal-new;
+}
+
+@keyframes auth-modal-new {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes auth-modal-old {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(18%);
+  }
+}
+
+/* Calendario de recepcion - CSS minimo que Bootstrap no cubre */
+.calendario-grilla {
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.calendario-grilla th,
+.calendario-grilla td {
+  border: 1px solid #dee2e6;
   text-align: center;
+  vertical-align: middle;
+  min-width: 38px;
+  height: 36px;
+  padding: 2px;
 }
 
-.hello-page h1 {
-  margin: 0;
-  font-size: clamp(2rem, 4vw, 3rem);
+.calendario-grilla th {
+  background-color: #f8f9fa;
+  font-weight: 600;
 }
 
-.hello-page p {
-  margin: 0;
-  color: #5f6472;
+.calendario-grilla .celda-libre {
+  background-color: #ffffff;
 }
+
+.calendario-grilla .celda-reservada {
+  background-color: #fde68a;
+  cursor: pointer;
+}
+
+.calendario-grilla .celda-checkin {
+  background-color: #bbf7d0;
+  cursor: pointer;
+}
+
+.calendario-grilla .celda-checkout {
+  background-color: #fecaca;
+  cursor: pointer;
+}
+
+.calendario-grilla .celda-transicion {
+  background: linear-gradient(135deg, #fecaca 50%, #bbf7d0 50%);
+  cursor: pointer;
+}
+
+.calendario-grilla .celda-reservada:hover,
+.calendario-grilla .celda-checkin:hover,
+.calendario-grilla .celda-checkout:hover,
+.calendario-grilla .celda-transicion:hover {
+  opacity: 0.8;
+}
+
+.calendario-grilla .habitacion-label {
+  min-width: 110px;
+  text-align: left;
+  padding: 4px 8px;
+  background-color: #fff;
+  font-weight: 500;
+}
+
+.calendario-grilla .dia-fin-semana {
+  background-color: #f1f5f9;
+}
+
