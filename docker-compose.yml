@@ -4,7 +4,6 @@ services:
   backend:
     build: ./backend
     restart: unless-stopped
-    # command: bash -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 --workers ${GUNICORN_WORKERS:-2} --max-requests 1000 --timeout 60 config.wsgi:application"
     command: bash -c "python manage.py migrate && python manage.py collectstatic --noinput --clear && gunicorn --bind 0.0.0.0:8000 config.wsgi:application"
     env_file:
       - ./.env
@@ -12,6 +11,8 @@ services:
       DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-config.settings}
     expose:
       - "8000"
+    volumes:
+      - django_static:/app/staticfiles 
 
   frontend:
     build: ./frontend
@@ -22,8 +23,10 @@ services:
     volumes:
       - certbot-webroot:/var/www/certbot
       - /etc/letsencrypt:/etc/letsencrypt:ro
+      - django_static:/app/staticfiles  # <-- NUEVO: Nginx monta el mismo volumen para leerlos
     depends_on:
       - backend
 
 volumes:
   certbot-webroot:
+  django_static:  # <-- NUEVO: Declaración del volumen
