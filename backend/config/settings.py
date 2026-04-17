@@ -24,13 +24,26 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 if load_dotenv:
     load_dotenv(BASE_DIR / '.env')
 
+
+def leer_booleano_env(nombre, valor_por_defecto=False):
+    valor = os.environ.get(nombre)
+    if valor is None:
+        return valor_por_defecto
+    return valor.strip().lower() in ('1', 'true', 'yes', 'on')
+
+
+def leer_lista_env(nombre, valor_por_defecto=''):
+    valor = os.environ.get(nombre, valor_por_defecto)
+    return [item.strip() for item in valor.split(',') if item.strip()]
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@3zl@hd)nbnd&tfepg7dmcc8_c+=vf2))98y4+96o(@bk*&!hh'
+DEBUG = leer_booleano_env('DEBUG', True)
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-only-change-me')
+ALLOWED_HOSTS = leer_lista_env('ALLOWED_HOSTS', 'localhost,127.0.0.1')
+CSRF_TRUSTED_ORIGINS = leer_lista_env('CSRF_TRUSTED_ORIGINS')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+if not DEBUG and SECRET_KEY == 'django-insecure-dev-only-change-me':
+    raise ValueError('Configura SECRET_KEY para produccion.')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -100,6 +113,17 @@ SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN': True,
 }
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+
+if not DEBUG:
+    SECURE_SSL_REDIRECT = leer_booleano_env('SECURE_SSL_REDIRECT', True)
+    SESSION_COOKIE_SECURE = leer_booleano_env('SESSION_COOKIE_SECURE', True)
+    CSRF_COOKIE_SECURE = leer_booleano_env('CSRF_COOKIE_SECURE', True)
+    SECURE_HSTS_SECONDS = int(os.environ.get('SECURE_HSTS_SECONDS', '31536000'))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
@@ -148,4 +172,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
