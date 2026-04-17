@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     command: bash -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 --workers ${GUNICORN_WORKERS:-2} --max-requests 1000 --timeout 60 config.wsgi:application"
     env_file:
-      - ./.env.production
+      - ./.env
     environment:
       DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-config.settings}
     expose:
