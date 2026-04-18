@@ -12,6 +12,7 @@ from api.serializers import (
     SerializadorReserva,
 )
 from api.services import ServicioReserva
+from api.services.waitlist_service import ServicioListaEspera
 
 
 class ReservaViewSet(viewsets.ModelViewSet):
@@ -72,6 +73,10 @@ class ReservaViewSet(viewsets.ModelViewSet):
         reserva = self.get_object()
         reserva.estado = Reserva.CANCELADA
         reserva.save(update_fields=['estado'])
+
+        servicio_lista = ServicioListaEspera()
+        servicio_lista.evaluar_candidatos_tras_cancelacion(reserva)
+
         return Response({'mensaje': 'Reserva cancelada.'}, status=status.HTTP_200_OK)
 
     @action(methods=['post'], detail=True, url_path='registrar-entrada')

@@ -16,6 +16,22 @@ class ServicioPrecios:
         if fecha_salida <= fecha_entrada:
             raise ErrorValidacionHotel('La fecha de salida debe ser mayor a la fecha de entrada.')
 
+        total_habitaciones = Habitacion.objects.filter(activo=True, lista=True).count()
+
+        reservas_rango = list(
+            Reserva.objects
+            .filter(
+                fecha_entrada__lt=fecha_salida,
+                fecha_salida__gt=fecha_entrada,
+                activo=True,
+            )
+            .exclude(estado=Reserva.CANCELADA)
+            .only('id', 'fecha_entrada', 'fecha_salida')
+        )
+
+        if reserva_id_excluir:
+            reservas_rango = [r for r in reservas_rango if r.id != reserva_id_excluir]
+
         cantidad_noches = (fecha_salida - fecha_entrada).days
         subtotal = Decimal('0.00')
         detalles_noches = []
@@ -25,7 +41,8 @@ class ServicioPrecios:
             detalle = self._calcular_noche(
                 habitacion,
                 fecha_noche,
-                reserva_id_excluir=reserva_id_excluir,
+                total_habitaciones,
+                reservas_rango,
             )
             detalles_noches.append(detalle)
             subtotal += detalle['precio_final']
@@ -59,7 +76,7 @@ class ServicioPrecios:
             'detalles_noches': detalles_noches,
         }
 
-    def _calcular_noche(self, habitacion: Habitacion, fecha_noche, reserva_id_excluir=None):
+    def _calcular_noche(self, habitacion: Habitacion, fecha_noche, total_habitaciones, reservas_rango):
         precio_base = habitacion.tipo_habitacion.precio_base
         recargo_fin_semana = Decimal('0.00')
         recargo_ocupacion = Decimal('0.00')
@@ -71,9 +88,10 @@ class ServicioPrecios:
             )
 
         precio_previo = precio_base + recargo_fin_semana
-        tasa_ocupacion = self._calcular_ocupacion_hotel(
+        tasa_ocupacion = self._calcular_ocupacion_noche(
             fecha_noche,
-            reserva_id_excluir=reserva_id_excluir,
+            total_habitaciones,
+            reservas_rango,
         )
 
         if tasa_ocupacion > self.UMBRAL_OCUPACION:
@@ -96,24 +114,13 @@ class ServicioPrecios:
             'precio_final': precio_final,
         }
 
-    def _calcular_ocupacion_hotel(self, fecha_noche, reserva_id_excluir=None):
-        total_habitaciones = Habitacion.objects.filter(activo=True, lista=True).count()
+    def _calcular_ocupacion_noche(self, fecha_noche, total_habitaciones, reservas_rango):
         if total_habitaciones == 0:
             return Decimal('0.00')
 
-        reservas_ocupadas = (
-            Reserva.objects
-            .filter(
-                fecha_entrada__lte=fecha_noche,
-                fecha_salida__gt=fecha_noche,
-                activo=True,
-            )
-            .exclude(estado=Reserva.CANCELADA)
+        ocupadas = sum(
+            1 for r in reservas_rango
+            if r.fecha_entrada <= fecha_noche and r.fecha_salida > fecha_noche
         )
-
-        if reserva_id_excluir:
-            reservas_ocupadas = reservas_ocupadas.exclude(id=reserva_id_excluir)
-
-        ocupadas = reservas_ocupadas.count()
 
         return Decimal(ocupadas) / Decimal(total_habitaciones)

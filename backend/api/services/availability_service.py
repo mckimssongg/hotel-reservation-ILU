@@ -1,7 +1,8 @@
 from calendar import monthrange
 from datetime import date, timedelta
 
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
+from django.utils import timezone
 
 from api.exceptions import ErrorValidacionHotel
 from api.models import Habitacion, Reserva, TipoHabitacion
@@ -57,7 +58,11 @@ class ServicioDisponibilidad:
             .values_list('habitacion_id', flat=True)
         )
 
-        return habitaciones.exclude(id__in=ids_ocupadas).order_by('numero')
+        ahora = timezone.now()
+        habitaciones = habitaciones.exclude(id__in=ids_ocupadas)
+        habitaciones = habitaciones.exclude(retenida_hasta__gt=ahora)
+
+        return habitaciones.order_by('numero')
 
     def obtener_matriz_calendario(
         self,

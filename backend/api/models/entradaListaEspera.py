@@ -25,10 +25,21 @@ class EntradaListaEspera(ModeloBase):
     fecha_entrada_preferida = models.DateField()
     fecha_salida_preferida = models.DateField()
     cantidad_huespedes = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+    es_flexible = models.BooleanField(default=False)
     dias_flexibles = models.PositiveIntegerField(default=2)
     estado = models.CharField(max_length=20, choices=ESTADOS, default=PENDIENTE)
     notificada_en = models.DateTimeField(null=True, blank=True)
     retencion_hasta = models.DateTimeField(null=True, blank=True)
+
+    habitacion_retenida = models.ForeignKey(
+        'Habitacion',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='entradas_retenidas',
+    )
+    fecha_entrada_asignada = models.DateField(null=True, blank=True)
+    fecha_salida_asignada = models.DateField(null=True, blank=True)
 
     class Meta:
         ordering = ['creado_en']
@@ -43,3 +54,7 @@ class EntradaListaEspera(ModeloBase):
 
     def __str__(self):
         return f"Espera {self.nombre_huesped} - {self.tipo_habitacion.get_nombre_display()}"
+
+    @property
+    def noches_solicitadas(self):
+        return (self.fecha_salida_preferida - self.fecha_entrada_preferida).days

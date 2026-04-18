@@ -15,6 +15,15 @@ class Habitacion(ModeloBase):
     lista = models.BooleanField(default=True)
     nota = models.CharField(max_length=120, blank=True, default='')
 
+    retenida_hasta = models.DateTimeField(null=True, blank=True)
+    retenida_para = models.ForeignKey(
+        'EntradaListaEspera',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='habitacion_retencion',
+    )
+
     class Meta:
         ordering = ['numero']
         verbose_name = 'Habitacion'

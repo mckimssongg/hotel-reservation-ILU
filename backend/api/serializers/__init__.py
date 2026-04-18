@@ -6,6 +6,10 @@ from api.serializers.habitacion import (
 	SerializadorHabitacionDisponible,
 	SerializadorTipoHabitacion,
 )
+from api.serializers.listaEspera import (
+	SerializadorCrearListaEspera,
+	SerializadorListaEspera,
+)
 from api.serializers.reserva import (
 	SerializadorConfirmarModificacionReserva,
 	SerializadorCotizarModificacionReserva,
@@ -13,6 +17,7 @@ from api.serializers.reserva import (
 	SerializadorPrecioNocheReserva,
 	SerializadorReserva,
 )
+from api.serializers.stats import SerializadorConsultaDashboard
 from api.serializers.user import (
 	SerializadorCambioClaveUsuario,
 	SerializadorLecturaUsuario,
@@ -34,4 +39,7 @@ __all__ = [
 	'SerializadorCrearReserva',
 	'SerializadorCotizarModificacionReserva',
 	'SerializadorConfirmarModificacionReserva',
+	'SerializadorConsultaDashboard',
+	'SerializadorCrearListaEspera',
+	'SerializadorListaEspera',
 ]
