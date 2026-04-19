@@ -55,17 +55,20 @@ export default function MonitorListaEspera({ entradaId, onReiniciar }) {
   useEffect(() => {
     if (!entradaId) return
 
+    let activo = true
     const protocolo = window.location.protocol === 'https:' ? 'wss' : 'ws'
     const url = `${protocolo}://${window.location.host}/ws/lista-espera/${entradaId}/`
     const ws = new WebSocket(url)
     wsRef.current = ws
 
     ws.onopen = () => {
+      if (!activo) return
       setWsConectado(true)
       setEstadoMonitor(ESTADO_ESPERANDO)
     }
 
     ws.onmessage = (evento) => {
+      if (!activo) return
       try {
         const datos = JSON.parse(evento.data)
 
@@ -85,6 +88,7 @@ export default function MonitorListaEspera({ entradaId, onReiniciar }) {
     }
 
     ws.onclose = (evento) => {
+      if (!activo) return
       setWsConectado(false)
       if (evento.code === 4001) {
         console.warn('WebSocket: token JWT invalido.')
@@ -98,10 +102,12 @@ export default function MonitorListaEspera({ entradaId, onReiniciar }) {
     }
 
     ws.onerror = () => {
+      if (!activo) return
       console.warn('MonitorListaEspera: error en WebSocket.')
     }
 
     return () => {
+      activo = false
       limpiarIntervalo()
       if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
         ws.close()

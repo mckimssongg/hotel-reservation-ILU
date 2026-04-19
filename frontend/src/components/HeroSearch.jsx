@@ -76,7 +76,7 @@ export default function HeroSearch({ filtros, tiposHabitacion, cargandoBusqueda,
         </div>
 
         <div className="col-12 col-md-2 d-grid">
-          <button type="submit" className="btn btn-primary" disabled={cargandoBusqueda}>
+          <button type="submit" className="btn btn-hotel-primary" disabled={cargandoBusqueda}>
             <i className="bi bi-search me-2" />
             {cargandoBusqueda ? 'Buscando...' : 'Buscar'}
           </button>

@@ -7,8 +7,9 @@ import { useAuth } from '../hooks/useAuth'
 
 export default function DashboardPage() {
   const navigate = useNavigate()
-  const { cerrarSesion } = useAuth()
+  const { cerrarSesion, usuario } = useAuth()
   const [sidebarVisibleMovil, setSidebarVisibleMovil] = useState(false)
+  const esStaff = usuario?.es_staff === true
 
   async function manejarCerrarSesion() {
     await cerrarSesion()
@@ -22,8 +23,8 @@ export default function DashboardPage() {
       <section className="container py-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <div>
-            <h1 className="h2 mb-1">Panel de Usuario</h1>
-            <p className="text-secondary mb-0">Gestiona tus reservaciones y seguimiento de espera</p>
+            <h1 className="h2 mb-1">{esStaff ? 'Panel de Recepcionista' : 'Panel de Usuario'}</h1>
+            {!esStaff && <p className="text-secondary mb-0">Gestiona tus reservaciones y seguimiento de espera</p>}
           </div>
           <button
             type="button"

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Navigate } from 'react-router-dom'
 
 
 import { useAuth } from '../hooks/useAuth'
-import { obtenerEntradasListaEsperaApi } from '../services/hotelApi'
+import { obtenerEntradasListaEsperaApi, cancelarEntradaListaEsperaApi } from '../services/hotelApi'
 import { formatearFechaCorta, obtenerMensajeError } from '../utils/hotelHelpers'
+import MonitorListaEspera from '../components/MonitorListaEspera'
 
 const ESTADO_BADGE = {
   ESPERANDO: 'text-bg-warning',
@@ -18,7 +18,7 @@ export default function ListaEsperaPage() {
   const esStaff = usuario?.es_staff === true
 
   if (esStaff) return <VistaStaffListaEspera />
-  return <Navigate to="/" replace />
+  return <VistaHuespedListaEspera />
 }
 
 const PAGINA_SIZE = 5
@@ -172,3 +172,148 @@ function VistaStaffListaEspera() {
     </div>
   )
 }
+
+function VistaHuespedListaEspera() {
+  const { ejecutarConAuth } = useAuth()
+  const [entradas, setEntradas] = useState([])
+  const [cargando, setCargando] = useState(false)
+  const [error, setError] = useState('')
+  const [entradaMonitorActiva, setEntradaMonitorActiva] = useState(null)
+
+  useEffect(() => {
+    cargarEntradas()
+  }, [])
+
+  async function cargarEntradas() {
+    setCargando(true)
+    setError('')
+
+    try {
+      const { response, data } = await ejecutarConAuth((access) => obtenerEntradasListaEsperaApi(access))
+
+      if (!response.ok) {
+        setError(obtenerMensajeError(data, 'No se pudieron cargar tus entradas.'))
+        setEntradas([])
+        return
+      }
+
+      const lista = Array.isArray(data?.results) ? data.results : Array.isArray(data) ? data : []
+      setEntradas(lista)
+
+      const activa = lista.find(e => e.estado === 'PENDIENTE' || e.estado === 'RETENIDA')
+      if (activa) {
+        setEntradaMonitorActiva(activa.id)
+      } else {
+        setEntradaMonitorActiva(null)
+      }
+    } catch {
+      setError('Error de conexión al cargar tus listas de espera.')
+      setEntradas([])
+    } finally {
+      setCargando(false)
+    }
+  }
+
+  async function manejarCancelar(id) {
+    if (!window.confirm('¿Deseas cancelar esta inscripción en la lista de espera?')) return
+    try {
+      const { response } = await ejecutarConAuth((access) => cancelarEntradaListaEsperaApi(id, access))
+      if (response.ok) {
+        cargarEntradas()
+      } else {
+        alert('No se pudo cancelar.')
+      }
+    } catch {
+      alert('Error de conexión.')
+    }
+  }
+
+  return (
+    <div>
+      <h2 className="h4 mb-4">
+        <i className="bi bi-clock-history me-2" />
+        Mis Listas de Espera
+      </h2>
+
+      {error && (
+        <div className="alert alert-danger rounded-3" role="alert">
+          {error}
+        </div>
+      )}
+
+      {entradaMonitorActiva && (
+        <div className="mb-4">
+          <MonitorListaEspera 
+            entradaId={entradaMonitorActiva} 
+            onReiniciar={() => {
+              setEntradaMonitorActiva(null)
+              cargarEntradas()
+            }} 
+          />
+        </div>
+      )}
+
+      <div className="card border-0 shadow-sm rounded-4">
+        <div className="card-body">
+          {cargando && <p className="text-secondary">Cargando...</p>}
+
+          {!cargando && entradas.length === 0 && !error && (
+            <div className="text-center py-4 text-secondary">
+              <i className="bi bi-inbox display-5 d-block mb-2" />
+              No tienes ninguna inscripción en lista de espera.
+            </div>
+          )}
+
+          {!cargando && entradas.length > 0 && (
+            <div className="table-responsive">
+              <table className="table table-hover align-middle mb-0">
+                <thead style={{ backgroundColor: 'var(--hotel-color-secundario)' }}>
+                  <tr className="small text-secondary">
+                    <th className="py-3 px-3 rounded-start">FECHAS PREFERIDAS</th>
+                    <th className="py-3 px-3">TIPO</th>
+                    <th className="py-3 px-3">FLEXIBILIDAD</th>
+                    <th className="py-3 px-3">ESTADO</th>
+                    <th className="py-3 px-3 text-end rounded-end">ACCIONES</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {entradas.map((entrada) => (
+                    <tr key={entrada.id}>
+                      <td className="px-3 py-3 fw-medium">
+                        {formatearFechaCorta(entrada.fecha_entrada_preferida)} – {formatearFechaCorta(entrada.fecha_salida_preferida)}
+                      </td>
+                      <td className="px-3 py-3">{entrada.tipo_habitacion_nombre || 'Cualquiera'}</td>
+                      <td className="px-3 py-3 text-secondary">
+                        {entrada.es_flexible ? `±${entrada.dias_flexibles} días` : 'Rígida'}
+                      </td>
+                      <td className="px-3 py-3">
+                        <span className={`badge rounded-pill ${ESTADO_BADGE[entrada.estado] || 'bg-light text-dark border'}`}
+                          style={entrada.estado === 'ESPERANDO' ? { backgroundColor: 'var(--hotel-color-primario)' } : {}}
+                        >
+                          {entrada.estado}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3 text-end">
+                        {entrada.estado === 'PENDIENTE' && (
+                          <button onClick={() => manejarCancelar(entrada.id)} className="btn btn-sm btn-outline-danger">
+                            Cancelar
+                          </button>
+                        )}
+                        {(entrada.estado === 'PENDIENTE' || entrada.estado === 'RETENIDA') && entradaMonitorActiva !== entrada.id && (
+                           <button onClick={() => setEntradaMonitorActiva(entrada.id)} className="btn btn-sm btn-outline-hotel-primary ms-2">
+                             Ver Monitor
+                           </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+

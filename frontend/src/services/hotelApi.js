@@ -165,3 +165,10 @@ export async function obtenerEntradasListaEsperaApi(accessToken) {
     headers: armarHeaderAuth(accessToken),
   })
 }
+
+export async function cancelarEntradaListaEsperaApi(entradaId, accessToken) {
+  return peticion(`${API_BASE_URL}/lista-espera/${entradaId}/`, {
+    method: 'DELETE',
+    headers: armarHeaderAuth(accessToken),
+  })
+}

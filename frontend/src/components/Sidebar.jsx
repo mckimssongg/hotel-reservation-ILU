@@ -8,6 +8,7 @@ export default function Sidebar({ visibleMovil, onCerrarMovil, onCerrarSesion })
 
   const opcionesHuesped = [
     { path: '/dashboard/mis-reservaciones', label: 'Mis Reservaciones', icono: 'bi-journal-check' },
+    { path: '/dashboard/lista-espera', label: 'Lista de Espera', icono: 'bi-clock-history' },
   ]
 
   const opcionesStaff = [
