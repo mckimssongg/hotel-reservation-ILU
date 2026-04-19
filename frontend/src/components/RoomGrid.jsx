@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import RoomCard from './RoomCard'
 import FormularioListaEspera from './FormularioListaEspera'
@@ -7,6 +7,11 @@ import MonitorListaEspera from './MonitorListaEspera'
 export default function RoomGrid({ habitaciones, resumen, busquedaRealizada, cargandoBusqueda, errorBusqueda, onReservar, filtrosBusqueda }) {
   const [mostrarWaitlist, setMostrarWaitlist] = useState(false)
   const [entradaId, setEntradaId] = useState(null)
+
+  useEffect(() => {
+    setMostrarWaitlist(false)
+    setEntradaId(null)
+  }, [habitaciones, cargandoBusqueda])
 
   const totalHabitaciones = resumen?.count || habitaciones.length || 0
 

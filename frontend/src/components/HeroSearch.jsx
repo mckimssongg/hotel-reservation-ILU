@@ -4,7 +4,7 @@ export default function HeroSearch({ filtros, tiposHabitacion, cargandoBusqueda,
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
         <div>
           <h1 className="h3 mb-1">Buscar Habitaciones</h1>
-          <p className="mb-0 text-secondary">Encuentra la habitacion ideal para tus fechas</p>
+          {/* <p className="mb-0 text-secondary">Encuentra la habitacion ideal para tus fechas</p> */}
         </div>
       </div>
 

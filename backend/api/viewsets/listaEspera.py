@@ -29,7 +29,7 @@ class ListaEsperaViewSet(viewsets.ModelViewSet):
         return SerializadorListaEspera
 
     def get_permissions(self):
-        if self.action in ('create', 'estado', 'confirmar'):
+        if self.action in ('create', 'confirmar'):
             return [AllowAny()]
         return [IsAuthenticated()]
 
@@ -43,12 +43,12 @@ class ListaEsperaViewSet(viewsets.ModelViewSet):
         respuesta = SerializadorListaEspera(entrada).data
         return Response(respuesta, status=status.HTTP_201_CREATED)
 
-    @action(methods=['get'], detail=True, url_path='estado')
-    def estado(self, request, *args, **kwargs):
-        entrada = self.get_object()
-        servicio = ServicioListaEspera()
-        resultado = servicio.consultar_estado_entrada(entrada.id)
-        return Response(resultado, status=status.HTTP_200_OK)
+    # @action(methods=['get'], detail=True, url_path='estado')
+    # def estado(self, request, *args, **kwargs):
+    #     entrada = self.get_object()
+    #     servicio = ServicioListaEspera()
+    #     resultado = servicio.consultar_estado_entrada(entrada.id)
+    #     return Response(resultado, status=status.HTTP_200_OK)
 
     @action(methods=['post'], detail=True, url_path='confirmar')
     def confirmar(self, request, *args, **kwargs):
