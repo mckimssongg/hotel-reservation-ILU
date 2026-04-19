@@ -43,7 +43,7 @@ class ServicioListaEspera:
             dias_flexibles=datos.get('dias_flexibles', 2),
         )
 
-    def evaluar_candidatos_tras_cancelacion(self, reserva):
+    def evaluar_candidatos_tras_liberacion(self, reserva):
         habitacion = reserva.habitacion
 
         candidatos = (

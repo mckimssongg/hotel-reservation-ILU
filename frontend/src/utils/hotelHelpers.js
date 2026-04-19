@@ -30,7 +30,8 @@ export function formatearFechaCorta(fechaISO) {
   }
 
   try {
-    const fecha = new Date(`${fechaISO}T00:00:00`)
+    const esDateOnly = typeof fechaISO === 'string' && fechaISO.length === 10
+    const fecha = esDateOnly ? new Date(`${fechaISO}T00:00:00`) : new Date(fechaISO)
     return new Intl.DateTimeFormat('es-GT', {
       day: '2-digit',
       month: 'short',

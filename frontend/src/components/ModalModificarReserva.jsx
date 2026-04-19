@@ -159,6 +159,9 @@ export default function ModalModificarReserva({ abierto, reserva, onCerrar, onMo
               <h3 className="h4 mb-1">Modificar Fechas</h3>
               <p className="mb-0 text-secondary">
                 Reserva {reserva.codigo_reserva} - Habitacion {reserva.habitacion?.numero || '-'}
+                {reserva.habitacion?.tipo_habitacion?.nombre && (
+                  <span className="badge text-bg-light border ms-2">{reserva.habitacion.tipo_habitacion.nombre}</span>
+                )}
               </p>
             </div>
             <button type="button" className="btn-close" onClick={onCerrar} aria-label="Cerrar" />

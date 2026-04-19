@@ -24,18 +24,18 @@ export const filtrosDashboardIniciales = {
   estado: '',
 }
 
-export const estadoReservaBadgeMap = {
-  PENDIENTE: 'text-bg-warning',
-  CONFIRMADA: 'text-bg-success',
-  REGISTRADA_ENTRADA: 'text-bg-info',
-  REGISTRADA_SALIDA: 'text-bg-secondary',
-  CANCELADA: 'text-bg-danger',
+export const estadoReservaBadgeClases = {
+  PENDIENTE: 'badge-estado-pendiente',
+  CONFIRMADA: 'badge-estado-confirmada',
+  REGISTRADA_ENTRADA: 'badge-estado-en-estadia',
+  REGISTRADA_SALIDA: 'badge-estado-finalizada',
+  CANCELADA: 'badge-estado-cancelada',
 }
 
 export const estadoReservaTextoMap = {
   PENDIENTE: 'Pendiente',
   CONFIRMADA: 'Confirmada',
-  REGISTRADA_ENTRADA: 'En estadia',
+  REGISTRADA_ENTRADA: 'En estadía',
   REGISTRADA_SALIDA: 'Finalizada',
   CANCELADA: 'Cancelada',
 }

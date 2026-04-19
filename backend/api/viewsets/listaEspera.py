@@ -10,12 +10,17 @@ from api.services.waitlist_service import ServicioListaEspera
 
 
 class ListaEsperaViewSet(viewsets.ModelViewSet):
-    queryset = (
-        EntradaListaEspera.objects
-        .filter(activo=True)
-        .select_related('tipo_habitacion', 'habitacion_retenida')
-        .order_by('creado_en')
-    )
+    def get_queryset(self):
+        queryset = (
+            EntradaListaEspera.objects
+            .filter(activo=True)
+            .select_related('tipo_habitacion', 'habitacion_retenida')
+            .order_by('-creado_en')
+        )
+        usuario = self.request.user
+        if usuario.is_authenticated and not usuario.is_staff:
+            queryset = queryset.filter(email_huesped__iexact=usuario.email)
+        return queryset
     serializer_class = SerializadorListaEspera
 
     def get_serializer_class(self):

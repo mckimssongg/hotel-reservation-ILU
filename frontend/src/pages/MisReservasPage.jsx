@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import ModalCancelarReserva from '../components/ModalCancelarReserva'
 import ModalModificarReserva from '../components/ModalModificarReserva'
-import { filtrosDashboardIniciales, estadoReservaBadgeMap, estadoReservaTextoMap } from '../constants/appConstants'
+import { filtrosDashboardIniciales, estadoReservaBadgeClases, estadoReservaTextoMap } from '../constants/appConstants'
 import { useAuth } from '../hooks/useAuth'
 import { cancelarReservaApi, obtenerReservasApi } from '../services/hotelApi'
 import { formatearFechaCorta, formatearMoneda, obtenerMensajeError } from '../utils/hotelHelpers'
@@ -145,7 +145,8 @@ export default function MisReservasPage() {
                   <div>
                     <div className="d-flex align-items-center gap-2 flex-wrap">
                       <h3 className="h5 mb-0">Habitacion {reserva.habitacion?.numero || '-'}</h3>
-                      <span className={`badge ${estadoReservaBadgeMap[reserva.estado] || 'text-bg-secondary'}`}>
+                      <span className="badge text-bg-light border small">{reserva.habitacion?.tipo_habitacion?.nombre || '—'}</span>
+                      <span className={`badge ${estadoReservaBadgeClases[reserva.estado] || 'badge-estado-finalizada'}`}>
                         {estadoReservaTextoMap[reserva.estado] || reserva.estado}
                       </span>
                     </div>

@@ -166,3 +166,64 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+.modal-notificacion-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(20, 24, 31, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  padding: 1rem;
+}
+
+.modal-notificacion-contenido {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  max-width: 460px;
+  width: 100%;
+  padding: 2rem;
+  animation: modal-notif-entrada 300ms ease-out;
+}
+
+@keyframes modal-notif-entrada {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Badges de estado con paleta Naturaleza Moderna */
+.badge-estado-pendiente {
+  background-color: #fde68a;
+  color: #92400e;
+}
+
+.badge-estado-confirmada {
+  background-color: #bbf7d0;
+  color: #166534;
+}
+
+.badge-estado-en-estadia {
+  background-color: #bfdbfe;
+  color: #1e40af;
+}
+
+.badge-estado-finalizada {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.badge-estado-cancelada {
+  background-color: #fecaca;
+  color: #991b1b;
+}
+

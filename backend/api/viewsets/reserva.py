@@ -34,7 +34,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         usuario = self.request.user
-        if usuario.is_authenticated and getattr(usuario, 'es_staff', False) is False:
+        if usuario.is_authenticated and not usuario.is_staff:
             queryset = queryset.filter(email_huesped__iexact=usuario.email)
         return queryset
 
@@ -82,7 +82,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
         reserva.save(update_fields=['estado'])
 
         servicio_lista = ServicioListaEspera()
-        servicio_lista.evaluar_candidatos_tras_cancelacion(reserva)
+        servicio_lista.evaluar_candidatos_tras_liberacion(reserva)
 
         return Response({'mensaje': 'Reserva cancelada.'}, status=status.HTTP_200_OK)
 
@@ -121,6 +121,10 @@ class ReservaViewSet(viewsets.ModelViewSet):
             reserva_id=reserva.id,
             datos=serializador.validated_data,
         )
+
+        servicio_lista = ServicioListaEspera()
+        servicio_lista.evaluar_candidatos_tras_liberacion(reserva_actualizada)
+
         serializador_respuesta = SerializadorReserva(reserva_actualizada)
         return Response(serializador_respuesta.data, status=status.HTTP_200_OK)
 

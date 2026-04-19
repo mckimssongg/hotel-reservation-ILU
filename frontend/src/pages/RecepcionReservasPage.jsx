@@ -1,12 +1,18 @@
 import { useEffect, useState } from 'react'
 
-import { estadoReservaBadgeMap, estadoReservaTextoMap } from '../constants/appConstants'
 import { useAuth } from '../hooks/useAuth'
 import { obtenerReservasApi, registrarEntradaReservaApi, registrarSalidaReservaApi } from '../services/hotelApi'
 import { formatearFechaCorta, obtenerMensajeError } from '../utils/hotelHelpers'
 
 const ESTADOS_FILTRO = ['Todos', 'CONFIRMADA', 'REGISTRADA_ENTRADA', 'REGISTRADA_SALIDA', 'CANCELADA']
-const PAGINA_SIZE = 5
+
+const ESTADO_TEXTO = {
+  PENDIENTE: 'Pendiente',
+  CONFIRMADA: 'Confirmada',
+  REGISTRADA_ENTRADA: 'En estadía',
+  REGISTRADA_SALIDA: 'Finalizada',
+  CANCELADA: 'Cancelada',
+}
 
 function obtenerHoyISO() {
   return new Date().toISOString().split('T')[0]
@@ -20,7 +26,9 @@ export default function RecepcionReservasPage() {
   const [error, setError] = useState('')
   const [filtroEstado, setFiltroEstado] = useState('Todos')
   const [filtroBusqueda, setFiltroBusqueda] = useState('')
+  const [filtroRapido, setFiltroRapido] = useState('')
   const [paginaActual, setPaginaActual] = useState(1)
+  const [paginaSize, setPaginaSize] = useState(5)
 
   useEffect(() => {
     cargarReservaciones()
@@ -52,43 +60,41 @@ export default function RecepcionReservasPage() {
 
   async function manejarCheckIn(reservaId) {
     setError('')
-    const { response, data } = await ejecutarConAuth((access) => registrarEntradaReservaApi(reservaId, access))
-    if (!response.ok) {
-      setError(obtenerMensajeError(data, 'No se pudo registrar la entrada.'))
-      return
-    }
-    setReservas((prev) =>
-      prev.map((r) =>
-        r.id === reservaId ? { ...r, estado: 'REGISTRADA_ENTRADA' } : r
+    try {
+      const { response, data } = await ejecutarConAuth((access) => registrarEntradaReservaApi(reservaId, access))
+      if (!response.ok) {
+        setError(obtenerMensajeError(data, 'No se pudo registrar la entrada.'))
+        return
+      }
+      setReservas((prev) =>
+        prev.map((r) =>
+          r.id === reservaId ? { ...r, estado: 'REGISTRADA_ENTRADA' } : r
+        )
       )
-    )
+    } catch {
+      setError('Error de conexión al registrar la entrada.')
+    }
   }
 
   async function manejarCheckOut(reservaId) {
     setError('')
-    const { response, data } = await ejecutarConAuth((access) => registrarSalidaReservaApi(reservaId, access))
-    if (!response.ok) {
-      setError(obtenerMensajeError(data, 'No se pudo registrar la salida.'))
-      return
-    }
-    setReservas((prev) =>
-      prev.map((r) =>
-        r.id === reservaId ? { ...r, estado: 'REGISTRADA_SALIDA' } : r
+    try {
+      const { response, data } = await ejecutarConAuth((access) => registrarSalidaReservaApi(reservaId, access))
+      if (!response.ok) {
+        setError(obtenerMensajeError(data, 'No se pudo registrar la salida.'))
+        return
+      }
+      setReservas((prev) =>
+        prev.map((r) =>
+          r.id === reservaId ? { ...r, estado: 'REGISTRADA_SALIDA' } : r
+        )
       )
-    )
+    } catch {
+      setError('Error de conexión al registrar la salida.')
+    }
   }
 
   const hoy = obtenerHoyISO()
-
-  function filtrarLleganHoy() {
-    setFiltroEstado('CONFIRMADA')
-    setFiltroBusqueda('')
-  }
-
-  function filtrarSalenHoy() {
-    setFiltroEstado('REGISTRADA_ENTRADA')
-    setFiltroBusqueda('')
-  }
 
   const reservasFiltradas = reservas.filter((r) => {
     if (filtroEstado !== 'Todos' && r.estado !== filtroEstado) return false
@@ -102,19 +108,22 @@ export default function RecepcionReservasPage() {
       if (!coincide) return false
     }
 
+    if (filtroRapido === 'LleganHoy' && r.fecha_entrada !== hoy) return false
+    if (filtroRapido === 'SalenHoy' && r.fecha_salida !== hoy) return false
+
     return true
   })
 
-  const totalPaginas = Math.max(1, Math.ceil(reservasFiltradas.length / PAGINA_SIZE))
-  const inicio = (paginaActual - 1) * PAGINA_SIZE
-  const reservasPagina = reservasFiltradas.slice(inicio, inicio + PAGINA_SIZE)
+  const totalPaginas = Math.max(1, Math.ceil(reservasFiltradas.length / paginaSize))
+  const inicio = (paginaActual - 1) * paginaSize
+  const reservasPagina = reservasFiltradas.slice(inicio, inicio + paginaSize)
 
   const activas = reservas.filter((r) => r.estado === 'REGISTRADA_ENTRADA').length
   const pendientes = reservas.filter((r) => r.estado === 'CONFIRMADA').length
 
   useEffect(() => {
     setPaginaActual(1)
-  }, [filtroEstado, filtroBusqueda])
+  }, [filtroEstado, filtroBusqueda, filtroRapido, paginaSize])
 
   return (
     <div>
@@ -130,7 +139,7 @@ export default function RecepcionReservasPage() {
             <small className="text-secondary">ACTIVAS</small>
           </div>
           <div className="text-center">
-            <div className="fw-bold h5 mb-0 text-warning">{pendientes}</div>
+            <div className="fw-bold h5 mb-0" style={{ color: '#b45309' }}>{pendientes}</div>
             <small className="text-secondary">PENDIENTES</small>
           </div>
         </div>
@@ -156,16 +165,24 @@ export default function RecepcionReservasPage() {
             >
               {ESTADOS_FILTRO.map((est) => (
                 <option key={est} value={est}>
-                  {est === 'Todos' ? 'Todos' : (estadoReservaTextoMap[est] || est)}
+                  {est === 'Todos' ? 'Todos' : (ESTADO_TEXTO[est] || est)}
                 </option>
               ))}
             </select>
 
-            <button type="button" className="btn btn-outline-hotel-primary btn-sm" onClick={filtrarLleganHoy}>
+            <button
+              type="button"
+              className={`btn btn-sm ${filtroRapido === 'LleganHoy' ? 'btn-hotel-primary' : 'btn-outline-hotel-primary'}`}
+              onClick={() => setFiltroRapido((prev) => (prev === 'LleganHoy' ? '' : 'LleganHoy'))}
+            >
               <i className="bi bi-box-arrow-in-right me-1" />
               Llegan hoy
             </button>
-            <button type="button" className="btn btn-outline-hotel-primary btn-sm" onClick={filtrarSalenHoy}>
+            <button
+              type="button"
+              className={`btn btn-sm ${filtroRapido === 'SalenHoy' ? 'btn-hotel-primary' : 'btn-outline-hotel-primary'}`}
+              onClick={() => setFiltroRapido((prev) => (prev === 'SalenHoy' ? '' : 'SalenHoy'))}
+            >
               <i className="bi bi-box-arrow-right me-1" />
               Salen hoy
             </button>
@@ -224,31 +241,41 @@ export default function RecepcionReservasPage() {
                 </table>
               </div>
 
-              {totalPaginas > 1 && (
-                <nav className="d-flex justify-content-between align-items-center mt-3">
+              <nav className="d-flex justify-content-between align-items-center mt-3">
+                <div className="d-flex align-items-center gap-3">
                   <small className="text-secondary">
-                    {inicio + 1}–{Math.min(inicio + PAGINA_SIZE, reservasFiltradas.length)} de {reservasFiltradas.length}
+                    {inicio + 1}–{Math.min(inicio + paginaSize, reservasFiltradas.length)} de {reservasFiltradas.length}
                   </small>
-                  <div className="btn-group btn-group-sm">
-                    <button
-                      type="button"
-                      className="btn btn-outline-hotel-primary"
-                      disabled={paginaActual <= 1}
-                      onClick={() => setPaginaActual((p) => p - 1)}
-                    >
-                      Anterior
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-outline-hotel-primary"
-                      disabled={paginaActual >= totalPaginas}
-                      onClick={() => setPaginaActual((p) => p + 1)}
-                    >
-                      Siguiente
-                    </button>
-                  </div>
-                </nav>
-              )}
+                  <select
+                    className="form-select form-select-sm"
+                    value={paginaSize}
+                    onChange={(e) => setPaginaSize(Number(e.target.value))}
+                    style={{ width: '80px' }}
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                  </select>
+                </div>
+                <div className="btn-group btn-group-sm">
+                  <button
+                    type="button"
+                    className="btn btn-outline-hotel-primary"
+                    disabled={paginaActual <= 1}
+                    onClick={() => setPaginaActual((p) => p - 1)}
+                  >
+                    Anterior
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline-hotel-primary"
+                    disabled={paginaActual >= totalPaginas}
+                    onClick={() => setPaginaActual((p) => p + 1)}
+                  >
+                    Siguiente
+                  </button>
+                </div>
+              </nav>
             </>
           )}
         </div>
@@ -258,7 +285,7 @@ export default function RecepcionReservasPage() {
 }
 
 function FilaReserva({ reserva, hoy, onCheckIn, onCheckOut }) {
-  const tipoTexto = reserva.habitacion?.tipo_habitacion_nombre || ''
+  const tipoNombre = reserva.habitacion?.tipo_habitacion?.nombre || ''
   const numero = reserva.habitacion?.numero || '-'
 
   const esLlegaHoy = reserva.fecha_entrada === hoy && reserva.estado === 'CONFIRMADA'
@@ -266,28 +293,27 @@ function FilaReserva({ reserva, hoy, onCheckIn, onCheckOut }) {
 
   return (
     <tr>
-      <td>
+      <td className="px-3 py-3">
         <span className="fw-semibold" style={{ color: 'var(--hotel-color-primario)' }}>
           {reserva.codigo_reserva}
         </span>
       </td>
-      <td>{reserva.nombre_huesped}</td>
-      <td>
+      <td className="px-3 py-3">{reserva.nombre_huesped}</td>
+      <td className="px-3 py-3">
         <i className="bi bi-door-closed me-1" />
-        {numero} {tipoTexto ? `(${tipoTexto})` : ''}
+        {numero}
+        {tipoNombre && <span className="badge bg-light text-dark border ms-2 small">{tipoNombre}</span>}
       </td>
-      <td className="small text-secondary">
+      <td className="small text-secondary px-3 py-3">
         {formatearFechaCorta(reserva.fecha_entrada)}<br />
         {formatearFechaCorta(reserva.fecha_salida)}
       </td>
-      <td>
-        <span className={`badge rounded-pill ${estadoReservaBadgeMap[reserva.estado] || 'bg-light text-dark border'}`} style={reserva.estado === 'CONFIRMADA' ? { backgroundColor: 'var(--hotel-color-primario)' } : {}}>
-          {estadoReservaTextoMap[reserva.estado] || reserva.estado}
-        </span>
+      <td className="px-3 py-3">
+        <BadgeEstado estado={reserva.estado} />
         {esLlegaHoy && <i className="bi bi-arrow-right-circle-fill ms-2" style={{ color: 'var(--hotel-color-primario)' }} title="Llega hoy" />}
-        {esSaleHoy && <i className="bi bi-arrow-left-circle-fill text-warning ms-2" title="Sale hoy" />}
+        {esSaleHoy && <i className="bi bi-arrow-left-circle-fill ms-2" style={{ color: '#b45309' }} title="Sale hoy" />}
       </td>
-      <td className="text-end">
+      <td className="text-end px-3 py-3">
         {reserva.estado === 'CONFIRMADA' && (
           <button
             type="button"
@@ -302,7 +328,7 @@ function FilaReserva({ reserva, hoy, onCheckIn, onCheckOut }) {
         {reserva.estado === 'REGISTRADA_ENTRADA' && (
           <button
             type="button"
-            className="btn btn-sm btn-hotel-primary"
+            className="btn btn-sm btn-outline-hotel-primary"
             onClick={() => onCheckOut(reserva.id)}
             title="Registrar salida"
           >
@@ -312,5 +338,26 @@ function FilaReserva({ reserva, hoy, onCheckIn, onCheckOut }) {
         )}
       </td>
     </tr>
+  )
+}
+
+function BadgeEstado({ estado }) {
+  const config = {
+    PENDIENTE: { bg: '#fde68a', color: '#92400e', texto: 'Pendiente' },
+    CONFIRMADA: { bg: '#bbf7d0', color: '#166534', texto: 'Confirmada' },
+    REGISTRADA_ENTRADA: { bg: '#bfdbfe', color: '#1e40af', texto: 'En estadía' },
+    REGISTRADA_SALIDA: { bg: '#e5e7eb', color: '#374151', texto: 'Finalizada' },
+    CANCELADA: { bg: '#fecaca', color: '#991b1b', texto: 'Cancelada' },
+  }
+
+  const c = config[estado] || { bg: '#e5e7eb', color: '#374151', texto: estado }
+
+  return (
+    <span
+      className="badge rounded-pill"
+      style={{ backgroundColor: c.bg, color: c.color }}
+    >
+      {c.texto}
+    </span>
   )
 }

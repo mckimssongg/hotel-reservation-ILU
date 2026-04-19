@@ -27,7 +27,7 @@ export default function FormularioListaEspera({ datosIniciales = {}, onEntradaCr
     return {
       ...formularioBase,
       nombre_huesped: nombreCompleto,
-      email_huesped: usuario?.email || '',
+      email_huesped: usuario?.correo || '',
       fecha_entrada_preferida: datosIniciales.fecha_entrada_preferida || '',
       fecha_salida_preferida: datosIniciales.fecha_salida_preferida || '',
       cantidad_huespedes: datosIniciales.cantidad_huespedes || 1,
@@ -37,7 +37,7 @@ export default function FormularioListaEspera({ datosIniciales = {}, onEntradaCr
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState('')
 
-  const camposUsuarioLlenados = Boolean(usuario?.email)
+  const camposUsuarioLlenados = Boolean(usuario?.correo)
 
   useEffect(() => {
     async function cargarTipos() {

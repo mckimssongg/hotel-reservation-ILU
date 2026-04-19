@@ -174,9 +174,9 @@ export default function MonitorListaEspera({ entradaId, onReiniciar }) {
             <i className="bi bi-broadcast me-2" />
             Monitor de espera
           </h3>
-          <span className={`badge rounded-pill ${wsConectado ? 'text-bg-success' : 'text-bg-secondary'}`}>
+          {/* <span className={`badge rounded-pill ${wsConectado ? 'text-bg-success' : 'text-bg-secondary'}`}>
             {wsConectado ? 'Conectado' : 'Desconectado'}
-          </span>
+          </span> */}
         </div>
 
         {estadoMonitor === ESTADO_ESPERANDO && (
