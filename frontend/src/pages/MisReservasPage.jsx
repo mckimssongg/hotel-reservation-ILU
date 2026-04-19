@@ -22,13 +22,12 @@ export default function MisReservasPage() {
   const [reservaACancelar, setReservaACancelar] = useState(null)
 
   const correoUsuario = useMemo(() => (usuario?.correo || '').toLowerCase(), [usuario?.correo])
-  const reservasFiltradas = useMemo(() => {
-    if (!correoUsuario) {
-      return []
-    }
+  const [paginaActual, setPaginaActual] = useState(1)
+  const PAGINA_SIZE = 5
 
-    return reservas.filter((reserva) => (reserva.email_huesped || '').toLowerCase() === correoUsuario)
-  }, [correoUsuario, reservas])
+  useEffect(() => {
+    setPaginaActual(1)
+  }, [filtros.estado])
 
   useEffect(() => {
     cargarReservaciones()
@@ -104,6 +103,10 @@ export default function MisReservasPage() {
 
   const puedeModificar = (estado) => estado === 'PENDIENTE' || estado === 'CONFIRMADA'
 
+  const totalPaginas = Math.max(1, Math.ceil(reservas.length / PAGINA_SIZE))
+  const inicio = (paginaActual - 1) * PAGINA_SIZE
+  const reservasPagina = reservas.slice(inicio, inicio + PAGINA_SIZE)
+
   return (
     <>
       <div className="card border-0 shadow-sm rounded-4">
@@ -119,7 +122,7 @@ export default function MisReservasPage() {
                 <option value="REGISTRADA_SALIDA">Finalizada</option>
                 <option value="CANCELADA">Cancelada</option>
               </select>
-              <button type="submit" className="btn btn-outline-secondary">
+              <button type="submit" className="btn btn-outline-hotel-primary">
                 Filtrar
               </button>
             </form>
@@ -129,14 +132,14 @@ export default function MisReservasPage() {
           {errorReservas ? <div className="alert alert-danger">{errorReservas}</div> : null}
           {cargandoReservas ? <p className="text-secondary mb-0">Cargando reservaciones...</p> : null}
 
-          {!cargandoReservas && correoUsuario && reservasFiltradas.length === 0 ? (
+          {!cargandoReservas && correoUsuario && reservas.length === 0 ? (
             <div className="rounded-4 p-4 text-center" style={{ backgroundColor: 'var(--hotel-color-fondo)' }}>
               <p className="mb-0 text-secondary">Todavia no tienes reservaciones en este panel.</p>
             </div>
           ) : null}
 
           <div className="d-grid gap-3">
-            {reservasFiltradas.map((reserva) => (
+            {reservasPagina.map((reserva) => (
               <article key={reserva.id} className="rounded-4 border p-3 shadow-sm">
                 <div className="d-flex flex-column flex-md-row justify-content-between gap-2">
                   <div>
@@ -161,7 +164,7 @@ export default function MisReservasPage() {
                   <div className="mt-3 d-flex gap-2 flex-wrap">
                     <button
                       type="button"
-                      className="btn btn-outline-primary btn-sm"
+                      className="btn btn-outline-hotel-primary btn-sm"
                       onClick={() => abrirModalModificar(reserva)}
                     >
                       <i className="bi bi-pencil me-1" />
@@ -175,6 +178,32 @@ export default function MisReservasPage() {
               </article>
             ))}
           </div>
+
+          {!cargandoReservas && reservas.length > 0 && totalPaginas > 1 && (
+            <nav className="d-flex justify-content-between align-items-center mt-4">
+              <small className="text-secondary">
+                Mostrando {inicio + 1}–{Math.min(inicio + PAGINA_SIZE, reservas.length)} de {reservas.length} reservas
+              </small>
+              <div className="btn-group btn-group-sm">
+                <button
+                  type="button"
+                  className="btn btn-outline-hotel-primary"
+                  disabled={paginaActual <= 1}
+                  onClick={() => setPaginaActual((p) => p - 1)}
+                >
+                  Anterior
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-outline-hotel-primary"
+                  disabled={paginaActual >= totalPaginas}
+                  onClick={() => setPaginaActual((p) => p + 1)}
+                >
+                  Siguiente
+                </button>
+              </div>
+            </nav>
+          )}
         </div>
       </div>
 

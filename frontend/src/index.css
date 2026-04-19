@@ -135,3 +135,34 @@ body {
   background-color: #f1f5f9;
 }
 
+.btn-hotel-primary {
+  background-color: var(--hotel-color-primario);
+  border-color: var(--hotel-color-primario);
+  color: #fff;
+}
+
+.btn-hotel-primary:hover,
+.btn-hotel-primary:focus {
+  background-color: #234d24;
+  border-color: #234d24;
+  color: #fff;
+}
+
+.btn-outline-hotel-primary {
+  color: var(--hotel-color-primario);
+  border-color: var(--hotel-color-primario);
+  background-color: transparent;
+}
+
+.btn-outline-hotel-primary:hover,
+.btn-outline-hotel-primary:focus {
+  background-color: var(--hotel-color-primario);
+  color: #fff;
+}
+
+.countdown-display {
+  font-size: 2.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+

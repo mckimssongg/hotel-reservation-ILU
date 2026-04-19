@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext'
 import { useAuth } from './hooks/useAuth'
 import CalendarioRecepcionPage from './pages/CalendarioRecepcionPage'
 import DashboardPage from './pages/DashboardPage'
+import DashboardEstadisticasPage from './pages/DashboardEstadisticasPage'
 import ListaEsperaPage from './pages/ListaEsperaPage'
 import MisReservasPage from './pages/MisReservasPage'
 import RecepcionReservasPage from './pages/RecepcionReservasPage'
@@ -54,6 +55,14 @@ export default function App() {
             element={
               <ProtectedRoute soloStaff>
                 <CalendarioRecepcionPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="estadisticas" 
+            element={
+              <ProtectedRoute soloStaff>
+                <DashboardEstadisticasPage />
               </ProtectedRoute>
             } 
           />

@@ -74,14 +74,14 @@ export default function AuthModal() {
           <div className="btn-group w-100 mb-3" role="group" aria-label="Cambiar modo autenticacion">
             <button
               type="button"
-              className={`btn ${modalAuth.modo === 'login' ? 'btn-primary' : 'btn-outline-secondary'}`}
+              className={`btn ${modalAuth.modo === 'login' ? 'btn-hotel-primary' : 'btn-outline-hotel-primary'}`}
               onClick={() => cambiarModoAuth('login')}
             >
               Iniciar sesion
             </button>
             <button
               type="button"
-              className={`btn ${modalAuth.modo === 'register' ? 'btn-primary' : 'btn-outline-secondary'}`}
+              className={`btn ${modalAuth.modo === 'register' ? 'btn-hotel-primary' : 'btn-outline-hotel-primary'}`}
               onClick={() => cambiarModoAuth('register')}
             >
               Crear cuenta
@@ -118,7 +118,7 @@ export default function AuthModal() {
                 required
               />
 
-              <button type="submit" className="btn btn-primary mt-3" disabled={cargandoAuth}>
+              <button type="submit" className="btn btn-hotel-primary mt-3" disabled={cargandoAuth}>
                 {cargandoAuth ? 'Entrando...' : 'Entrar'}
               </button>
             </form>
@@ -199,7 +199,7 @@ export default function AuthModal() {
               </div>
 
               <div className="col-12 mt-3">
-                <button type="submit" className="btn btn-primary w-100" disabled={cargandoAuth}>
+                <button type="submit" className="btn btn-hotel-primary w-100" disabled={cargandoAuth}>
                   {cargandoAuth ? 'Creando cuenta...' : 'Crear cuenta'}
                 </button>
               </div>

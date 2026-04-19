@@ -31,6 +31,13 @@ class ReservaViewSet(viewsets.ModelViewSet):
     search_fields = ('codigo_reserva', 'nombre_huesped', 'email_huesped', 'telefono_huesped')
     ordering_fields = ('creado_en', 'fecha_entrada', 'fecha_salida', 'precio_total')
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        usuario = self.request.user
+        if usuario.is_authenticated and getattr(usuario, 'es_staff', False) is False:
+            queryset = queryset.filter(email_huesped__iexact=usuario.email)
+        return queryset
+
     def get_serializer_class(self):
         if self.action == 'create':
             return SerializadorCrearReserva

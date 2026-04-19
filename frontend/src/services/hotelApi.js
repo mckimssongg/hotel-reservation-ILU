@@ -138,3 +138,30 @@ export async function obtenerPrecioHabitacionApi(habitacionId, queryParams) {
 export async function obtenerCalendarioMensualApi(queryParams) {
   return peticion(`${API_BASE_URL}/habitaciones/calendario-mensual/?${queryParams}`)
 }
+
+export async function obtenerEstadisticasDashboardApi(queryParams, accessToken) {
+  return peticion(`${API_BASE_URL}/estadisticas/?${queryParams}`, {
+    headers: armarHeaderAuth(accessToken),
+  })
+}
+
+export async function crearEntradaListaEsperaApi(payload) {
+  return peticion(`${API_BASE_URL}/lista-espera/`, {
+    method: 'POST',
+    headers: armarHeadersJson(),
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function confirmarReservaListaEsperaApi(entradaId) {
+  return peticion(`${API_BASE_URL}/lista-espera/${entradaId}/confirmar/`, {
+    method: 'POST',
+    headers: armarHeadersJson(),
+  })
+}
+
+export async function obtenerEntradasListaEsperaApi(accessToken) {
+  return peticion(`${API_BASE_URL}/lista-espera/?page_size=100`, {
+    headers: armarHeaderAuth(accessToken),
+  })
+}

@@ -68,7 +68,9 @@ export function extraerPagina(url) {
 
   try {
     const urlCompleta = new URL(url, window.location.origin)
-    const pagina = Number(urlCompleta.searchParams.get('page'))
+    const paginaParam = urlCompleta.searchParams.get('page')
+    const pagina = paginaParam ? Number(paginaParam) : 1
+    
     if (!Number.isFinite(pagina) || pagina < 1) {
       return null
     }

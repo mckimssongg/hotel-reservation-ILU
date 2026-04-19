@@ -23,6 +23,7 @@ export default function ReservationModal({ abierto, habitacion, filtrosBusqueda,
   const [detallesNoches, setDetallesNoches] = useState([])
   const [precioTotalDesglose, setPrecioTotalDesglose] = useState(0)
   const [cargandoDesglose, setCargandoDesglose] = useState(false)
+  const camposUsuarioLlenados = Boolean(usuario?.correo)
 
   useEffect(() => {
     if (!abierto) {
@@ -200,6 +201,7 @@ export default function ReservationModal({ abierto, habitacion, filtrosBusqueda,
                   className="form-control"
                   value={formulario.nombre_huesped}
                   onChange={actualizarCampo}
+                  readOnly={camposUsuarioLlenados}
                   required
                 />
               </div>
@@ -215,6 +217,7 @@ export default function ReservationModal({ abierto, habitacion, filtrosBusqueda,
                   className="form-control"
                   value={formulario.email_huesped}
                   onChange={actualizarCampo}
+                  readOnly={camposUsuarioLlenados}
                   required
                 />
               </div>
@@ -252,7 +255,7 @@ export default function ReservationModal({ abierto, habitacion, filtrosBusqueda,
                 <button type="button" className="btn btn-outline-secondary" onClick={onCerrar}>
                   Cancelar
                 </button>
-                <button type="submit" className="btn btn-primary" disabled={guardando}>
+                <button type="submit" className="btn btn-hotel-primary" disabled={guardando}>
                   {guardando ? 'Confirmando...' : 'Confirmar reservacion'}
                 </button>
               </div>

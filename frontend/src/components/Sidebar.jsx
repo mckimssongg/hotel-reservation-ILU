@@ -8,12 +8,12 @@ export default function Sidebar({ visibleMovil, onCerrarMovil, onCerrarSesion })
 
   const opcionesHuesped = [
     { path: '/dashboard/mis-reservaciones', label: 'Mis Reservaciones', icono: 'bi-journal-check' },
-    { path: '/dashboard/lista-espera', label: 'Lista de Espera', icono: 'bi-clock-history' },
   ]
 
   const opcionesStaff = [
     { path: '/dashboard/reservaciones', label: 'Todas las Reservas', icono: 'bi-inboxes' },
     { path: '/dashboard/calendario', label: 'Calendario', icono: 'bi-calendar3' },
+    { path: '/dashboard/estadisticas', label: 'Estadísticas', icono: 'bi-bar-chart-line' },
     { path: '/dashboard/lista-espera', label: 'Lista de Espera', icono: 'bi-clock-history' },
   ]
 

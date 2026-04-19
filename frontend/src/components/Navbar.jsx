@@ -36,26 +36,26 @@ export default function Navbar({ onMenuClick = null, mostrarMenuMovil = false })
               <div className="btn-group" role="group" aria-label="Navegacion principal">
                 <button
                   type="button"
-                  className={`btn btn-sm ${estaEnDashboard ? 'btn-outline-secondary' : 'btn-primary'}`}
+                  className={`btn btn-sm ${estaEnDashboard ? 'btn-outline-hotel-primary' : 'btn-hotel-primary'}`}
                   onClick={() => navigate('/')}
                 >
                   Buscar
                 </button>
                 <button
                   type="button"
-                  className={`btn btn-sm ${estaEnDashboard ? 'btn-primary' : 'btn-outline-secondary'}`}
+                  className={`btn btn-sm ${estaEnDashboard ? 'btn-hotel-primary' : 'btn-outline-hotel-primary'}`}
                   onClick={() => navigate('/dashboard')}
                 >
                   Mi panel
                 </button>
               </div>
 
-              <button type="button" className="btn btn-primary btn-sm" onClick={cerrarSesion}>
+              <button type="button" className="btn btn-outline-danger btn-sm" onClick={cerrarSesion}>
                 Cerrar sesion
               </button>
             </>
           ) : (
-            <button type="button" className="btn btn-primary" onClick={() => abrirModalAuth('login')}>
+            <button type="button" className="btn btn-hotel-primary" onClick={() => abrirModalAuth('login')}>
               Iniciar sesion
             </button>
           )}

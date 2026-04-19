@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import HeroSearch from '../components/HeroSearch'
 import Navbar from '../components/Navbar'
@@ -142,17 +143,6 @@ export default function PublicHomePage() {
     setModalReservaAbierto(true)
   }
 
-  function manejarListaEspera() {
-    setMensajeAccion('')
-
-    if (!isAuthenticated) {
-      abrirModalAuth('login')
-      return
-    }
-
-    // setMensajeAccion('La funcionalidad de lista de espera estara disponible en una siguiente fase.')
-    setMensajeAccion('Al rato sale mi estimado.')
-  }
 
   function cerrarModalReserva() {
     setModalReservaAbierto(false)
@@ -182,7 +172,14 @@ export default function PublicHomePage() {
           onBuscar={buscar}
         />
 
-        {mensajeAccion ? <div className="alert alert-info rounded-4 shadow-sm">{mensajeAccion}</div> : null}
+        {mensajeAccion ? (
+          <div className="alert alert-success mt-3 mb-4 rounded-4 shadow-sm d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3" style={{ backgroundColor: 'var(--hotel-color-secundario)', borderColor: 'var(--hotel-color-primario)', color: 'var(--hotel-color-texto)' }}>
+            <span className="fw-medium"><i className="bi bi-check-circle-fill me-2" style={{ color: 'var(--hotel-color-primario)' }} />{mensajeAccion}</span>
+            <Link to="/dashboard/mis-reservaciones" className="btn btn-hotel-primary btn-sm px-4 rounded-pill shadow-sm">
+              Ver mis reservaciones
+            </Link>
+          </div>
+        ) : null}
 
         <RoomGrid
           habitaciones={habitaciones}
@@ -191,14 +188,14 @@ export default function PublicHomePage() {
           cargandoBusqueda={cargandoBusqueda}
           errorBusqueda={errorBusqueda}
           onReservar={iniciarFlujoReserva}
-          onListaEspera={manejarListaEspera}
+          filtrosBusqueda={filtros}
         />
 
         {(resumen.paginaAnterior || resumen.paginaSiguiente) && !cargandoBusqueda ? (
           <div className="d-flex justify-content-end gap-2 mt-3">
             <button
               type="button"
-              className="btn btn-outline-secondary"
+              className="btn btn-outline-hotel-primary"
               disabled={!resumen.paginaAnterior}
               onClick={() => consultarDisponibilidad(resumen.paginaAnterior)}
             >
@@ -206,7 +203,7 @@ export default function PublicHomePage() {
             </button>
             <button
               type="button"
-              className="btn btn-outline-secondary"
+              className="btn btn-outline-hotel-primary"
               disabled={!resumen.paginaSiguiente}
               onClick={() => consultarDisponibilidad(resumen.paginaSiguiente)}
             >

@@ -46,6 +46,7 @@ if not DEBUG and SECRET_KEY == 'django-insecure-dev-only-change-me':
     raise ValueError('Configura SECRET_KEY para produccion.')
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -110,6 +111,8 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
+    'PAGE_SIZE_QUERY_PARAM': 'page_size',
+    'MAX_PAGE_SIZE': 500,
     'EXCEPTION_HANDLER': 'api.exceptions.handler.manejador_excepcion_personalizado',
 }
 

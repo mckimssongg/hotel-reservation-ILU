@@ -1,6 +1,6 @@
 import { formatearMoneda } from '../utils/hotelHelpers'
 
-export default function RoomCard({ habitacion, onReservar, onListaEspera }) {
+export default function RoomCard({ habitacion, onReservar }) {
   const tipo = habitacion?.tipo_habitacion
   const precioTotal = formatearMoneda(habitacion?.precio_total_estimado || 0)
   const precioBase = formatearMoneda(tipo?.precio_base || 0)
@@ -34,12 +34,9 @@ export default function RoomCard({ habitacion, onReservar, onListaEspera }) {
           </div>
         </div>
 
-        <div className="mt-auto d-grid gap-2">
-          <button type="button" className="btn btn-primary" onClick={() => onReservar(habitacion)}>
+        <div className="mt-auto d-grid">
+          <button type="button" className="btn btn-hotel-primary" onClick={() => onReservar(habitacion)}>
             Reservar
-          </button>
-          <button type="button" className="btn btn-outline-secondary" onClick={() => onListaEspera(habitacion)}>
-            Anadir a lista de espera
           </button>
         </div>
       </div>
