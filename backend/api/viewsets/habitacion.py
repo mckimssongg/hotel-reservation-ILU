@@ -94,10 +94,14 @@ class HabitacionViewSet(viewsets.ReadOnlyModelViewSet):
 
         habitacion = self.get_object()
         servicio_precios = ServicioPrecios()
+        
+        codigo_descuento = datos.get('codigo_descuento')
         resultado = servicio_precios.calcular_precio_habitacion(
             habitacion,
             datos['fecha_entrada'],
             datos['fecha_salida'],
+            reserva_id_excluir=None,
+            codigo_descuento=codigo_descuento,
         )
 
         detalle_noches = []
@@ -108,6 +112,7 @@ class HabitacionViewSet(viewsets.ReadOnlyModelViewSet):
                     'precio_base': str(noche['precio_base']),
                     'recargo_fin_semana': str(noche['recargo_fin_semana']),
                     'descuento_estadia_larga': str(noche['descuento_estadia_larga']),
+                    'recargo_prueba': str(noche['recargo_prueba']),
                     'recargo_ocupacion': str(noche['recargo_ocupacion']),
                     'precio_final': str(noche['precio_final']),
                 }
@@ -122,6 +127,7 @@ class HabitacionViewSet(viewsets.ReadOnlyModelViewSet):
                 'subtotal': str(resultado['subtotal']),
                 'descuento_estadia_larga': str(resultado['descuento_estadia_larga']),
                 'total': str(resultado['total']),
+                'descuento_aplicado': str(resultado['descuento_especial']),
                 'detalles_noches': detalle_noches,
             },
             status=status.HTTP_200_OK,

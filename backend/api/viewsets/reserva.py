@@ -3,6 +3,7 @@ from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from django.utils import timezone
 
 from api.models import Reserva
 from api.serializers import (
@@ -89,6 +90,13 @@ class ReservaViewSet(viewsets.ModelViewSet):
     @action(methods=['post'], detail=True, url_path='registrar-entrada')
     def registrar_entrada(self, request, *args, **kwargs):
         reserva = self.get_object()
+        
+        if reserva.fecha_entrada > timezone.now().date():
+            return Response(
+                {'mensaje': 'No se puede registrar entrada antes de la fecha de llegada.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         if reserva.estado not in (Reserva.PENDIENTE, Reserva.CONFIRMADA):
             return Response(
                 {'mensaje': 'No se puede registrar entrada desde el estado actual.'},

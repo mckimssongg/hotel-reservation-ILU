@@ -21,6 +21,7 @@ export default function ReservationModal({ abierto, habitacion, filtrosBusqueda,
   const [guardando, setGuardando] = useState(false)
 
   const [detallesNoches, setDetallesNoches] = useState([])
+  const [descuento_aplicado, setDescuentoAplicado] = useState(null)
   const [precioTotalDesglose, setPrecioTotalDesglose] = useState(0)
   const [cargandoDesglose, setCargandoDesglose] = useState(false)
   const camposUsuarioLlenados = Boolean(usuario?.correo)
@@ -57,12 +58,14 @@ export default function ReservationModal({ abierto, habitacion, filtrosBusqueda,
       const params = new URLSearchParams({
         fecha_entrada: filtrosBusqueda.fecha_entrada,
         fecha_salida: filtrosBusqueda.fecha_salida,
+        codigo_descuento: formulario.codigo_descuento,
       })
       const { response, data } = await obtenerPrecioHabitacionApi(habitacion.id, params.toString())
 
       if (response.ok && data) {
         setDetallesNoches(data.detalles_noches || [])
         setPrecioTotalDesglose(data.total || 0)
+        setDescuentoAplicado(data.descuento_especial || 0)
       }
     } catch {
       // No bloquear flujo si falla el desglose
@@ -108,6 +111,7 @@ export default function ReservationModal({ abierto, habitacion, filtrosBusqueda,
         fecha_salida: filtrosBusqueda.fecha_salida,
         cantidad_huespedes: Number(filtrosBusqueda.cantidad_huespedes || 1),
         notas: formulario.notas,
+        codigo_descuento: formulario.codigo_descuento,
       }
 
       const { response, data } = await crearReservaApi(payload)
@@ -171,6 +175,7 @@ export default function ReservationModal({ abierto, habitacion, filtrosBusqueda,
             detallesNoches={detallesNoches}
             totalFinal={precioTotalDesglose || habitacion.precio_total_estimado}
             cargando={cargandoDesglose}
+            descuento_aplicado={descuento_aplicado}
           />
 
           {errorReserva ? <div className="alert alert-danger py-2">{errorReserva}</div> : null}
@@ -236,6 +241,30 @@ export default function ReservationModal({ abierto, habitacion, filtrosBusqueda,
                   required
                 />
               </div>
+
+              <div className="col-12">
+                <label className="form-label mb-0" htmlFor="reserva_codigo_descuento_modal">
+                  Codigo de descuento (opcional)
+                </label>
+                <input
+                  id="reserva_codigo_descuento_modal"
+                  name="codigo_descuento"
+                  type="text"
+                  className="form-control"
+                  value={formulario.codigo_descuento}
+                  onChange={actualizarCampo}
+                />
+              </div>
+
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={() => {
+                  cargarDesglosePrecio()
+                }}
+              >
+                Aplicar codigo de descuento
+              </button>
 
               <div className="col-12">
                 <label className="form-label mb-0" htmlFor="reserva_notas_modal">

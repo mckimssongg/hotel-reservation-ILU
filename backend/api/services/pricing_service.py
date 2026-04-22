@@ -11,8 +11,20 @@ class ServicioPrecios:
     PORC_DESCUENTO_ESTADIA_LARGA = Decimal('0.10')
     UMBRAL_OCUPACION = Decimal('0.80')
     NOCHES_MIN_ESTADIA_LARGA = 5
+    OCUPACION_PRUEBA = Decimal('0.20')
+    DESCUENTO_PRUEBA = Decimal('0.20')
 
-    def calcular_precio_habitacion(self, habitacion: Habitacion, fecha_entrada, fecha_salida, reserva_id_excluir=None):
+    # codigo de descuento #NEGRITOBIMBO con 50% off
+    DESCUENTO_ESPECIAL = Decimal('0.50')
+    CODIGO_DESCUENTO = 'NEGRITOBIMBO'
+
+
+    def aplicar_descuento_especial(self, precio, codigo_descuento):
+        if codigo_descuento == self.CODIGO_DESCUENTO:
+            return precio * self.DESCUENTO_ESPECIAL
+        return precio
+
+    def calcular_precio_habitacion(self, habitacion: Habitacion, fecha_entrada, fecha_salida, reserva_id_excluir=None, codigo_descuento=None):
         if fecha_salida <= fecha_entrada:
             raise ErrorValidacionHotel('La fecha de salida debe ser mayor a la fecha de entrada.')
 
@@ -68,10 +80,18 @@ class ServicioPrecios:
                     rounding=ROUND_HALF_UP,
                 )
 
+        # 50% de descuento con codigo de descuento NEGRITOBIMBO
+        descuento_especial = Decimal('0.00')
+        if codigo_descuento == self.CODIGO_DESCUENTO:
+            descuento_especial = self.aplicar_descuento_especial(total, codigo_descuento)
+            total = (total - descuento_especial).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+        print('descuento_especial', descuento_especial)
         return {
             'cantidad_noches': cantidad_noches,
             'subtotal': subtotal.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
             'descuento_estadia_larga': descuento_estadia_larga,
+            'descuento_especial': descuento_especial,
             'total': total,
             'detalles_noches': detalles_noches,
         }
@@ -80,6 +100,7 @@ class ServicioPrecios:
         precio_base = habitacion.tipo_habitacion.precio_base
         recargo_fin_semana = Decimal('0.00')
         recargo_ocupacion = Decimal('0.00')
+        recargo_prueba = Decimal('0.00')
 
         if fecha_noche.weekday() in (4, 5):
             recargo_fin_semana = (precio_base * self.PORC_RECARGO_FIN_SEMANA).quantize(
@@ -93,14 +114,22 @@ class ServicioPrecios:
             total_habitaciones,
             reservas_rango,
         )
-
+        
+        #80
         if tasa_ocupacion > self.UMBRAL_OCUPACION:
             recargo_ocupacion = (precio_previo * self.PORC_RECARGO_OCUPACION).quantize(
                 Decimal('0.01'),
                 rounding=ROUND_HALF_UP,
             )
 
-        precio_final = (precio_base + recargo_fin_semana + recargo_ocupacion).quantize(
+        # tasa_ocupacion <= #20  Not fecha_noche.weekday() in (4, 5)
+        if not fecha_noche.weekday() in (4, 5) and tasa_ocupacion <= self.OCUPACION_PRUEBA:
+            recargo_prueba = (precio_previo * self.DESCUENTO_PRUEBA).quantize(
+                Decimal('0.01'),
+                rounding=ROUND_HALF_UP,
+            )
+
+        precio_final = (precio_base + recargo_fin_semana + recargo_ocupacion - recargo_prueba).quantize(
             Decimal('0.01'),
             rounding=ROUND_HALF_UP,
         )
@@ -110,6 +139,7 @@ class ServicioPrecios:
             'precio_base': precio_base,
             'recargo_fin_semana': recargo_fin_semana,
             'recargo_ocupacion': recargo_ocupacion,
+            'recargo_prueba': recargo_prueba,
             'descuento_estadia_larga': Decimal('0.00'),
             'precio_final': precio_final,
         }
