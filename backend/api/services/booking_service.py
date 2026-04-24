@@ -42,7 +42,6 @@ class ServicioReserva:
                 cantidad_huespedes=cantidad_huespedes,
                 reserva_id_excluir=None,
                 bloquear=True,
-                codigo_descuento=datos.get('codigo_descuento'),
             )
 
             reserva = self._crear_reserva(
@@ -73,7 +72,6 @@ class ServicioReserva:
             cantidad_huespedes=cantidad_huespedes,
             reserva_id_excluir=reserva.id,
             bloquear=False,
-            codigo_descuento=datos.get('codigo_descuento'),
         )
 
         precio_original = Decimal(reserva.precio_total).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
@@ -125,7 +123,6 @@ class ServicioReserva:
                 cantidad_huespedes=cantidad_huespedes,
                 reserva_id_excluir=reserva.id,
                 bloquear=True,
-                codigo_descuento=datos.get('codigo_descuento'),
             )
 
             reserva.fecha_entrada = fecha_entrada
@@ -214,7 +211,6 @@ class ServicioReserva:
         cantidad_huespedes,
         reserva_id_excluir=None,
         bloquear=True,
-        codigo_descuento=None,
     ):
         self.servicio_disponibilidad.validar_parametros(
             fecha_entrada,
@@ -238,7 +234,6 @@ class ServicioReserva:
             fecha_entrada,
             fecha_salida,
             reserva_id_excluir=reserva_id_excluir,
-            codigo_descuento=codigo_descuento,
         )
 
     def _obtener_reserva_serializable(self, reserva_id):

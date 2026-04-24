@@ -21,7 +21,7 @@ function esValorPositivo(valor) {
   return Number(valor || 0) > 0
 }
 
-export default function DesglosePrecio({ detallesNoches, totalFinal, cargando, descuento_aplicado }) {
+export default function DesglosePrecio({ detallesNoches, totalFinal, cargando }) {
   if (cargando) {
     return (
       <div className="rounded-3 p-3 mb-3" style={{ backgroundColor: 'var(--hotel-color-fondo)' }}>
@@ -49,7 +49,6 @@ export default function DesglosePrecio({ detallesNoches, totalFinal, cargando, d
               <th className="text-end">Fin Sem.</th>
               <th className="text-end">Ocup.</th>
               <th className="text-end">Desc. Larga</th>
-              <th className="text-end">Prueba</th>
               <th className="text-end fw-semibold">Final</th>
             </tr>
           </thead>
@@ -79,26 +78,13 @@ export default function DesglosePrecio({ detallesNoches, totalFinal, cargando, d
                     <span className="text-secondary">-</span>
                   )}
                 </td>
-                <td className="text-end small">
-                  {esValorPositivo(noche.recargo_prueba) ? (
-                    <span className="text-success">-{formatearMoneda(noche.recargo_prueba)}</span>
-                  ) : (
-                    <span className="text-secondary">-</span>
-                  )}
-                </td>
                 <td className="text-end small fw-semibold">{formatearMoneda(noche.precio_final)}</td>
               </tr>
             ))}
           </tbody>
           <tfoot>
-            {esValorPositivo(descuento_aplicado) && (
-              <tr className="table-light">
-                <td colSpan={6} className="text-end fw-semibold">Descuento Especial</td>
-                <td className="text-end fw-bold text-success">-{formatearMoneda(descuento_aplicado)}</td>
-              </tr>
-            )}
             <tr className="table-light">
-              <td colSpan={6} className="text-end fw-semibold">Total</td>
+              <td colSpan={5} className="fw-semibold">Total</td>
               <td className="text-end fw-bold">{formatearMoneda(totalFinal)}</td>
             </tr>
           </tfoot>

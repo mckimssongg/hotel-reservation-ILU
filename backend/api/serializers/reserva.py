@@ -55,7 +55,6 @@ class SerializadorCrearReserva(serializers.Serializer):
     canal_reserva = serializers.CharField(required=False, max_length=20, default='web')
     pagada = serializers.BooleanField(required=False, default=False)
     notas = serializers.CharField(required=False, allow_blank=True, default='')
-    codigo_descuento = serializers.CharField(required=False, allow_blank=True, default=None)
 
     def validate(self, attrs):
         fecha_entrada = attrs.get('fecha_entrada')
@@ -73,7 +72,6 @@ class SerializadorCotizarModificacionReserva(serializers.Serializer):
     fecha_entrada = serializers.DateField(required=True)
     fecha_salida = serializers.DateField(required=True)
     cantidad_huespedes = serializers.IntegerField(required=False, min_value=1)
-    codigo_descuento = serializers.CharField(required=False, allow_blank=True, default=None)
 
     def validate(self, attrs):
         fecha_entrada = attrs.get('fecha_entrada')
